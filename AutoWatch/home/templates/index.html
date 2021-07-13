@@ -34,11 +34,36 @@
    width: 500px;
    height: 350px;
    border: #dee2e6;
-   border-radius: 10px;
-   border-bottom: 5px;
-   box-shadow: 10px;
+   border-radius: 20px;
+   border-bottom: 1px solid rgba(204,204,204, 0.7);
+   box-shadow: 0 0  5px rgba(0,0,0, 0.7);
    background-image: url(static/assets/images/main_img.png);
    background-repeat: no-repeat;
+  }
+
+  .sign_up_input{
+    width: 400px;
+    height: 54px;
+    margin-left: 110px;
+  }
+  form#contact input:focus{
+    border-color: #088ec3;
+  }
+  form#contact {
+    width: 800px;
+    height: 600px;
+    margin-left: 250px;
+  }
+  .footer_text{
+    font-size: 15px;
+    line-height: 30px;
+    color: #2a2a2a;
+  }
+  form#contact button{
+    width: 200px;
+    height: 50px;
+    margin-top: 220px;
+
   }
 </style>
 </head>
@@ -57,11 +82,11 @@
             <!-- ***** Menu Start ***** -->
             <ul class="nav">
               <li class="scroll-to-section"><a href="#top" class="active">Home</a></li>
-              <li class="scroll-to-section"><a href="#features">Features</a></li>
-              <li class="scroll-to-section"><a href="#about">About Us</a></li>
+              <li class="scroll-to-section"><a href="#about">Outlines</a></li>
+              <li class="scroll-to-section"><a href="#features">Components</a></li>
               <li class="scroll-to-section"><a href="#services">Services</a></li>
-              <li class="scroll-to-section"><a href="#contact">Contact Us</a></li> 
-              <li class="scroll-to-section"><div class="main-blue-button"><a href="#contact">Sign Up</a></div></li> 
+              <li class="scroll-to-section"><a href="#contact">Sign Up</a></li> 
+              <li class="scroll-to-section"><div class="main-blue-button"><a href="#contact">Login</a></div></li> 
             </ul>        
             <a class='menu-trigger'>
                 <span>Menu</span>
@@ -92,7 +117,7 @@
                   </div>
                   <div class="col-lg-12">
                     <div class="main-green-button scroll-to-section">
-                      <a href="#contact">Sign Up</a>
+                      <a href="#contact">Login</a>
                     </div>
                   </div>
                 </div>
@@ -197,18 +222,11 @@
       <div class="row">
         <div class="col-lg-4">
           <div class="service-item wow bounceInUp" data-wow-duration="1s" data-wow-delay="0.3s">
-            <div class="row">
-              <div class="col-lg-4">
-                <div class="icon">
-                  <img src="static/assets/images/service-icon-01.png" alt="">
-                </div>
-              </div>
-              <div class="col-lg-8">
-                <div class="right-content">
-                  <h4>Similar Websites</h4>
-                  <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium dormque laudantium.</p>
-                </div>
-              </div>
+            <div class="icon">
+              <img src="static/assets/images/online-learning.png" alt="">
+            </div>
+            <div class="right-content">
+              <h4>실시간 다중 화상 공유</h4>
             </div>
           </div>
         </div>
@@ -217,13 +235,12 @@
             <div class="row">
               <div class="col-lg-4">
                 <div class="icon">
-                  <img src="static/assets/images/service-icon-02.png" alt="">
+                  <img src="static/assets/images/awareness.png" alt="">
                 </div>
               </div>
               <div class="col-lg-8">
                 <div class="right-content">
-                  <h4>Website Trends</h4>
-                  <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium dormque laudantium.</p>
+                  <h4>자리 이탈 확인</h4>
                 </div>
               </div>
             </div>
@@ -234,13 +251,12 @@
             <div class="row">
               <div class="col-lg-4">
                 <div class="icon">
-                  <img src="static/assets/images/service-icon-03.png" alt="">
+                  <img src="static/assets/images/mobile.png" alt="">
                 </div>
               </div>
               <div class="col-lg-8">
                 <div class="right-content">
-                  <h4>Traffic Analysis</h4>
-                  <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium dormque laudantium.</p>
+                  <h4>특정 App 차단</h4>
                 </div>
               </div>
             </div>
@@ -251,13 +267,12 @@
             <div class="row">
               <div class="col-lg-4">
                 <div class="icon">
-                  <img src="static/assets/images/service-icon-03.png" alt="">
+                  <img src="static/assets/images/analytics.png" alt="">
                 </div>
               </div>
               <div class="col-lg-8">
                 <div class="right-content">
-                  <h4>Optimizing Keywords</h4>
-                  <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium dormque laudantium.</p>
+                  <h4>집중도 및 참여 통계 결과</h4>
                 </div>
               </div>
             </div>
@@ -268,13 +283,12 @@
             <div class="row">
               <div class="col-lg-4">
                 <div class="icon">
-                  <img src="static/assets/images/service-icon-01.png" alt="">
+                  <img src="static/assets/images/eye.png" alt="">
                 </div>
               </div>
               <div class="col-lg-8">
                 <div class="right-content">
-                  <h4>Page Optimizations</h4>
-                  <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium dormque laudantium.</p>
+                  <h4>Eye-Tracking</h4>
                 </div>
               </div>
             </div>
@@ -285,13 +299,12 @@
             <div class="row">
               <div class="col-lg-4">
                 <div class="icon">
-                  <img src="static/assets/images/service-icon-02.png" alt="">
+                  <img src="static/assets/images/face-recognition.png" alt="">
                 </div>
               </div>
               <div class="col-lg-8">
                 <div class="right-content">
-                  <h4>Deep URL Analysis</h4>
-                  <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium dormque laudantium.</p>
+                  <h4>본인 확인</h4>
                 </div>
               </div>
             </div>
@@ -300,90 +313,38 @@
       </div>
     </div>
   </div>
-
+  
+ <!-- Sign Up -->
   <div id="contact" class="contact-us section">
     <div class="container">
       <div class="row">
         <div class="col-lg-12 wow fadeInUp" data-wow-duration="0.5s" data-wow-delay="0.25s">
           <form id="contact" action="" method="post">
-            <div class="row">
-              <div class="col-lg-6 offset-lg-3">
-                <div class="section-heading">
-                  <h6>Contact Us</h6>
-                  <h2>Fill Out The Form Below To <span>Get</span> In <em>Touch</em> With Us</h2>
-                </div>
-              </div>
-              <div class="col-lg-9">
-                <div class="row">
-                  <div class="col-lg-6">
-                    <fieldset>
-                      <input type="name" name="name" id="name" placeholder="Name" autocomplete="on" required>
-                    </fieldset>
-                  </div>
-                  <div class="col-lg-6">
-                    <fieldset>
-                      <input type="surname" name="surname" id="surname" placeholder="Surname" autocomplete="on" required>
-                    </fieldset>
-                  </div>
-                  <div class="col-lg-6">
-                    <fieldset>
-                      <input type="text" name="email" id="email" pattern="[^ @]*@[^ @]*" placeholder="Your Email" required="">
-                    </fieldset>
-                  </div>
-                  <div class="col-lg-6">
-                    <fieldset>
-                      <input type="subject" name="subject" id="subject" placeholder="Subject" autocomplete="on">
-                    </fieldset>
-                  </div>
-                  <div class="col-lg-12">
-                    <fieldset>
-                      <textarea name="message" type="text" class="form-control" id="message" placeholder="Message" required=""></textarea>  
-                    </fieldset>
-                  </div>
-                  <div class="col-lg-12">
-                    <fieldset>
-                      <button type="submit" id="form-submit" class="main-button ">Send Message Now</button>
-                    </fieldset>
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-3">
-                <div class="contact-info">
-                  <ul>
-                    <li>
-                      <div class="icon">
-                        <img src="static/assets/images/contact-icon-01.png" alt="email icon">
-                      </div>
-                      <a href="#">info@company.com</a>
-                    </li>
-                    <li>
-                      <div class="icon">
-                        <img src="static/assets/images/contact-icon-02.png" alt="phone">
-                      </div>
-                      <a href="#">+001-002-0034</a>
-                    </li>
-                    <li>
-                      <div class="icon">
-                        <img src="static/assets/images/contact-icon-03.png" alt="location">
-                      </div>
-                      <a href="#">26th Street, Digital Villa</a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
+            <div class="section-heading">
+              <h6>Sign Up</h6>
+              <h2>회원가입 후 <span>AutoWatch</span> 를 이용해 보세요!</h2>
+            </div>
+            <div class="sign_up_input">
+              <input type="email" id="id" placeholder="Email" autocomplete="off">
+              <input type="text" id="nickname" placeholder="닉네임" autocomplete="off">
+              <input type="password" id="password" placeholder="비밀번호" autocomplete="off">
+              <input type="password" id="re-password" placeholder="비밀번호 확인" autocomplete="off">
+            </div>
+            <div class="sign_up_btn">
+                <button type="submit" id="form-submit" class="main-button ">Sign Up</button>
             </div>
           </form>
         </div>
       </div>
     </div>
   </div>
+  <!-- 하단부 footer -->
   <footer>
     <div class="container">
       <div class="row">
         <div class="col-lg-12">
-          <p>Copyright © 2021 SEO Dream Co., Ltd. All Rights Reserved. 
-          
-          <br>Web Designed by <a rel="nofollow" href="https://templatemo.com" title="free CSS templates">TemplateMo</a></p>
+          <p class="footer_text">제3회 오픈 인프라 개발 경진 대회 
+          <br>Made by 해몽유식 <a class="footer_a" rel="">한국외국어대학교 정보통신공학과</a></p>
         </div>
       </div>
     </div>
