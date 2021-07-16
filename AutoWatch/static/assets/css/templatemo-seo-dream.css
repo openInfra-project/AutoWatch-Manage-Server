@@ -822,6 +822,9 @@ Banner Style
   padding: 226px 0px 120px 0px;
   position: relative;
   overflow: hidden;
+  /* background-image: url(static/assets/images/cloud.png);
+  border-bottom: 1px solid rgba(204,204,204, 0.7);
+  box-shadow: 0 0  5px rgba(0,0,0, 0.7); */
 }
 #sub_text{
   color: #eee;
@@ -851,7 +854,6 @@ Banner Style
   width: 450px;
   height: 350px;
   border-radius: 30px;
-  background-image: url(static/assets/images/main_img.png);
   background-repeat: no-repeat;
 }
 
@@ -859,6 +861,21 @@ Banner Style
   max-width: 593px;
 }
 
+.auto_logo{
+  width: 100px;
+  height: 50px;
+}
+/* .main-img{
+  width: 500px;
+  height: 350px;
+  border: #dee2e6;
+  border-radius: 20px;
+  border-bottom: 1px solid rgba(204,204,204, 0.7);
+  box-shadow: 0 0  5px rgba(0,0,0, 0.7);
+  background-image: url(static/assets/images/main_img.png);
+  background-repeat: no-repeat;
+  margin-left: 50px;
+ } */
 
 
 /* 
@@ -1207,7 +1224,6 @@ form#contact {
   display: flex;
   justify-content: center;
   align-items: center;
-
 }
 
 form#contact input {
@@ -1251,7 +1267,7 @@ form#contact textarea::placeholder {
 }
 
 form#contact button {
-  width: 100px;
+  width: 200px;
   height: 50px;
   display: inline-block;
   background-color: #33ccc5;
@@ -1338,7 +1354,9 @@ responsive
     margin-bottom: 0px !important;
   }
   .service-item {
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   .service-item .icon {
     margin-top: 0px;

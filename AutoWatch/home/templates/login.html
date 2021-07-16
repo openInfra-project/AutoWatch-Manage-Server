@@ -5,31 +5,34 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AutoWatch</title>
-    <link rel="stylesheet" href="static/assets/css/login.css">
+    <link rel="stylesheet" href="../../static/assets/css/login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 </head>
 <body>
     <div class="login">
-        <div class="container">
-            <div class="image">
-                <img src="static/assets/images/autowatch.png" alt="">
-            </div>
-            <div class="inner">
-                <div class="login-text">
-                    <span id="login-text">Login to AutoWatch</span>
+        <div class="animate__animated animate__zoomIn animate__delay-0.8s">
+            <div class="container">
+                <div class="image">
+                    <img src="../../static/assets/images/autowatch.png" alt="">
                 </div>
-                <form id="login" action="" method="POST">
-                    <div class="email-input">
-                        <img src="static/assets/images/email.png" alt="">
-                        <input type="email" id="email" placeholder="Email">
+                <div class="inner">
+                    <div class="login-text">
+                        <span id="login-text">Login to AutoWatch</span>
                     </div>
-                    <div class="password-input">
-                        <img src="static/assets/images/padlock.png" alt="">
-                        <input type="password" id="password" placeholder="password">
+                    <form id="login" action="" method="POST">
+                        <div class="email-input">
+                            <img src="../../static/assets/images/email.png" alt="">
+                            <input type="email" id="email" placeholder="Email">
+                        </div>
+                        <div class="password-input">
+                            <img src="../../static/assets/images/padlock.png" alt="">
+                            <input type="password" id="password" placeholder="password">
+                        </div>
+                        <button>Login</button>
+                    </form>
+                    <div class="to-sign-up">
+                        <span>Don't you have ID? <a href="">Sign up</a></span>
                     </div>
-                    <button>Login</button>
-                </form>
-                <div class="to-sign-up">
-                    <span>Don't you have ID? <a href="">Sign up</a></span>
                 </div>
             </div>
         </div>

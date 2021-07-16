@@ -25,11 +25,10 @@
     border-bottom: 1px solid rgba(204,204,204, 0.7);
     box-shadow: 0 0  5px rgba(0,0,0, 0.7);
   }
-  .auto_logo{
+  /* .auto_logo{
     width: 100px;
     height: 50px;
-  }
- 
+  } */
   .main-img{
    width: 500px;
    height: 350px;
@@ -41,40 +40,26 @@
    background-repeat: no-repeat;
    margin-left: 50px;
   }
-
-  .sign_up_input{
-    width: 400px;
-    height: 54px;
-    margin-left: 110px;
-  }
   form#contact input:focus{
     border-color: #088ec3;
-  }
-  form#contact {
-    width: 800px;
-    height: 600px;
-    margin-left: 250px;
-  }
+  } 
   .footer_text{
     font-size: 15px;
     line-height: 30px;
     color: #2a2a2a;
   }
+  .service-item h4 {
+    text-align: center;
+    margin-top: 20px;
+  }
+  form#contact {
+    width: 800px;
+    height: 600px;
+    margin-left: 250px;
+    display: block;
+  }
   form#contact button{
     width: 200px;
-    height: 50px;
-    margin-top: 220px;
-  }
-  .service-item{
-   
-  }
-  .service_center{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .right-content h4{
-    margin-left: 20px;
   }
 </style>
 </head>
@@ -97,7 +82,7 @@
               <li class="scroll-to-section"><a href="#features">Components</a></li>
               <li class="scroll-to-section"><a href="#services">Services</a></li>
               <li class="scroll-to-section"><a href="#contact">Sign Up</a></li> 
-              <li class="scroll-to-section"><div class="main-blue-button"><a href="#contact">Login</a></div></li> 
+              <li class="scroll-to-section"><div class="main-blue-button"><a href="/login">Login</a></div></li> 
             </ul>        
             <a class='menu-trigger'>
                 <span>Menu</span>
@@ -128,7 +113,7 @@
                   </div>
                   <div class="col-lg-12">
                     <div class="main-green-button scroll-to-section">
-                      <a href="#contact">Login</a>
+                      <a href="/login">Login</a>
                     </div>
                   </div>
                 </div>

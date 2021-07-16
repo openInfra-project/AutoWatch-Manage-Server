@@ -21,9 +21,13 @@ body{
     width: 600px;
     height: 600px;
 }
+
 .image img{
     width: 250px;
-
+   
+}
+.image img:hover{
+    animation: pulse;
 }
 span#login-text{
     font-size: 30px;
