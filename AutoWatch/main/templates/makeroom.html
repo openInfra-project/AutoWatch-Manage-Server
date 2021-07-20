@@ -1,0 +1,25 @@
+{%extends 'base.html'%}
+{% block content%}
+<div class="makeroom">
+    <span class="animate__animated animate__rubberBand animate__delay-1s">Make Your Room!</span>
+    <form action="">        <!-- 수정해야함!!!!!!!!!!!!!!!! -->
+        <div class="make-input">
+            <label for="">Room name
+                <input type="text" placeholder="Room 이름을 입력하세요.">
+            </label>
+            <div class="input-password">
+                <label for="">Password
+                    <input type="text"placeholder="Room 비밀번호를 입력하세요.">
+                </label>
+            </div>
+        </div>
+        <label class="mode" for="">Choose The Mode
+            <button onclick="location.href='/main/makeroom'">STUDY</button><button>EXAM</button>
+        </label>
+        <div class="file-creat"><input type="file"></div>
+        <div class="file-creat">
+            <button class="creat">Create</button>
+        </div>
+    </form>
+</div>
+{% endblock%}
