@@ -20,13 +20,15 @@
                         <span id="login-text">Login to AutoWatch</span>
                     </div>
                     <form id="login" action="" method="POST">
+                        {% csrf_token %}
+                        <!-- 크로스 도메인을 막기 위해 사용하느 코드 -->
                         <div class="email-input">
                             <img src="../../static/assets/images/email.png" alt="">
-                            <input type="email" id="email" placeholder="Email">
+                            <input type="email" id="email" name="email" placeholder="Email">
                         </div>
                         <div class="password-input">
                             <img src="../../static/assets/images/padlock.png" alt="">
-                            <input type="password" id="password" placeholder="password">
+                            <input type="password" id="password" name="password" placeholder="password">
                         </div>
                         <button>Login</button>
                     </form>
