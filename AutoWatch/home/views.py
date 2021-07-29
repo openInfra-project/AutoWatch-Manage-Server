@@ -47,4 +47,9 @@ def login(request):
                 return redirect('/main')
             else:
                 res_data['error'] = '비밀번호가 틀렸습니다.'
-        return render(request,'login.html',res_data) 
+                return render(request,'login.html',res_data)
+
+def logout(request):
+    if request.session.get('user'):
+        del(request.session['user'])
+    return redirect('/')         

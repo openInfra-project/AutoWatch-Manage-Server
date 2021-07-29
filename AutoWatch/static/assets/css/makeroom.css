@@ -1,20 +1,28 @@
 .makeroom{
     width: 100%;
     height: 100%;
-    padding: 10px;
+    padding: 30px;
+}
+.back{
+    width: 42px;
+    height: 42px;
+    cursor: pointer;
+    display: inline;
+}
+.back:hover{
+    content: url(/static/assets/images/previous\ \(1\).png);
 }
 .makeroom span{
-    font-size: larger;
+    font-size: 25px;
     color: #33ccc5;
     font-weight: 700;
     display: flex;
     justify-content: center;
-    margin-top: 20px;
 }
 .makeroom form{
     padding: 0 50px 0 50px;
     width: 100%;
-    height: 100%;
+    height: 80%;
     /* display: flex;
     justify-content: center;
     align-items: center; */
@@ -22,10 +30,22 @@
 .make-input label{
     font-size: large;
     font-weight: 600;
-    margin-left: 130px;
+    margin-left: 150px;
     margin-bottom: 5px;
 }
-.makeroom input{
+.room-name{
+    margin-top: 40px;
+    margin-left: 10px;
+    width: 300px;
+    height: 35px;
+    background-color: #f1f3f5;
+    border: 3px solid #adb5bd;
+    text-align: center;
+}
+.room-name:hover{
+    border: 3px solid #088ec3;
+}
+.room-password{
     margin-left: 10px;
     border: none;
     margin-top: 40px;
@@ -34,6 +54,7 @@
     background-color: #f1f3f5;
     border-bottom: 3px solid #adb5bd;
     font-size: large;
+    text-align: center;
 }
 .makeroom form .input-password{
     margin-left: 19px;
@@ -49,35 +70,40 @@
 .makeroom input:focus::placeholder{  /*  클릭시 text 없어짐 */
     color: transparent;
 }
+
 .mode{
     font-size: large;
     font-weight: 600;
-    margin-left: 80px;
-    margin-top: 10px;
+    margin-left: 100px;
+    margin-top: 80px;
 }
-.mode button{
-    width: 150px;
-    height: 50px;
-    margin-left: 10px;
-    margin-top: 40px;
-    background-color: #adb5bd;
-    opacity: 0.5;
+.checkbox{
+    font-size: 30px;
 }
 
-form label button:hover{
-    border: 5px solid #4771cb;
+
+input[type="checkbox"]{
+   margin-left: 20px; 
+   width: 30px;
+   height: 30px;
+   position: relative;
+   top: 4px;
 }
-form label button:active{
-    background-color: #4771cb;
+.file{
+    display: flex;
+    margin-top: 40px;
+    margin-left: 270px;
+    font-size: large;
 }
+
 button.creat{
-    position: absolute;
-    bottom: 70px;
-    margin-top: 80px;
-    margin-left: 80px;
+    /* position: absolute;
+    bottom: 70px; */
+    margin-top: 90px;
+    margin-left: 320px;
     width: 180px;
     height: 50px;
-    display: inline-block;
+    /* display: inline-block; */
     background-color: #4771cb;
     font-weight: 400;
     font-size: large;
@@ -93,11 +119,6 @@ button.creat{
 button.creat:hover{
     background-color: #33ccc5;
     border-bottom: 3px solid #4771cb!important;
-}
-
-.file-creat{
-    width: 400px;
-    margin-left: 220px;
 }
 
     /* enter STRAT */
@@ -127,11 +148,9 @@ button.creat:hover{
 .enter-input label{
     font-size: large;
     font-weight: 600;
-    margin-left: 130px;
     margin-bottom: 5px;
 }
 .enteroom input{
-    margin-left: 10px;
     border: none;
     margin-top: 50px;
     width: 350px;
@@ -156,7 +175,6 @@ button.creat:hover{
 }
 .enter{
     margin-top: 80px;
-    margin-left: 80px;
     width: 220px;
     height: 60px;
     display: inline-block;
@@ -178,5 +196,5 @@ button.enter:hover{
 }
 .enter-div{
     margin-top: 50px;
-    margin-left: 200px;
 }
+
