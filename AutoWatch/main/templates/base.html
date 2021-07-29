@@ -1,6 +1,5 @@
-{% load static %}
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" id="html">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -11,7 +10,7 @@
     <link rel="stylesheet" href="/static/assets/css/fontawesome.css">
     <link rel="stylesheet" href="/static/assets/css/templatemo-seo-dream.css">
     <link rel="stylesheet" href="/static/assets/css/main.css">
-    <link rel="stylesheet" href="/static/assets/css/makeroom.css">
+    <link rel="stylesheet" href="/static/assets/css/makeroom.css?after">
     <link rel="stylesheet" href="/static/assets/css/animated.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link rel="stylesheet" href="/static/assets/css/owl.css">
@@ -25,7 +24,7 @@
             <div class="col-12">
                 <nav class="main-nav">
                   <!-- ***** Logo Start ***** -->
-                  <a href="index.html" class="logo">
+                  <a href="/main" class="logo">
                     <h4>Auto Watch <img src="/static/assets/images/자동감시로고_-removebg-preview.png" alt="" class="auto_logo"></h4>
                   </a>
                   <!-- ***** Logo End ***** -->
@@ -33,8 +32,8 @@
                   <ul class="nav">
                     <li class="scroll-to-section"><a href="#features">My page</a></li>
                     <li class="scroll-to-section"><a href="#services">History</a></li>
-                    <li class="scroll-to-section"><a href="#contact">Logout</a></li>
-                    <li class="scroll-to-section"><div class="main-blue-button"><a href="#contact">황한식님 안녕하세요.</a></div></li>
+                    <li class="scroll-to-section"><a href="/logout">Logout</a></li>
+                    <li class="scroll-to-section"><div class="main-blue-button"><a href="#contact">{{username}}님 안녕하세요.</a></div></li>
                   </ul>
                   <a class='menu-trigger'>
                       <span>Menu</span>
@@ -51,10 +50,64 @@
       <div class="inner">
         {%block content%}
         
-
         {% endblock %}
       </div> 
     </div>
+
+
+
+    <!-- <script>
+        function checkbox(e) {
+          var obj = document.getElementsByClassName("checkbox");
+          for (var i = 0; i < obj.length; i++) {
+            if (obj[i] != e) {
+              obj[i].checked = false;
+            }
+          }
+        }
+        var study = document.getElementById('study');
+        var exam = document.getElementById('exam');
+        
+        study.addEventListener('click', function () {
+          checkbox(this);
+        });
+        exam.addEventListener('click', function () {
+          checkbox(this);
+        });
+
+        function show(){
+          var f = document.getElementById('file');
+          if(f.style.display =='none'){
+            f.style.display = 'flex';
+          }
+        }
+        exam.addEventListener('click',function(){
+          show();
+        });
+        let r = document.getElementById("room-name");
+        function room(){
+          var s = Math.random().toString(36).substr(2,7);
+          r.placeholder = s.toUpperCase();
+        }
+
+        let make = document.getElementById('make-room');
+        let makeroom = document.getElementsByClassName('makeroom');
+        makeroom.onload = function(){
+          make.addEventListener('click',room);
+        }
+        make.addEventListener('click',function(){
+          location.href='/main/makeroom';
+        });
+    </script> -->
+    <script>
+      let make = document.getElementById('make-room');
+      make.addEventListener('click',function(){
+          location.href='/main/makeroom';
+          let r = document.getElementById("room-name");
+          var s = Math.random().toString(36).substr(2,7);
+          r.placeholder = s.toUpperCase();
+      });
+    </script>
  
 </body>
 </html>

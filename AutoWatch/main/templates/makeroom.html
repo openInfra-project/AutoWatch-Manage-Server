@@ -1,25 +1,146 @@
-{%extends 'base.html'%}
-{% block content%}
-<div class="makeroom">
-    <span class="animate__animated animate__rubberBand animate__delay-1s">Make Your Room!</span>
-    <form action="">        <!-- 수정해야함!!!!!!!!!!!!!!!! -->
-        <div class="make-input">
-            <label for="">Room name
-                <input type="text" placeholder="Room 이름을 입력하세요.">
-            </label>
-            <div class="input-password">
-                <label for="">Password
-                    <input type="text"placeholder="Room 비밀번호를 입력하세요.">
-                </label>
+<!DOCTYPE html>
+<html lang="ko" id="make_html">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoWatch</title>
+    <link href="/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Additional CSS Files -->
+    <link rel="stylesheet" href="/static/assets/css/fontawesome.css">
+    <link rel="stylesheet" href="/static/assets/css/templatemo-seo-dream.css">
+    <link rel="stylesheet" href="/static/assets/css/main.css">
+    <link rel="stylesheet" href="/static/assets/css/makeroom.css">
+    <link rel="stylesheet" href="/static/assets/css/animated.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="/static/assets/css/owl.css">
+</head>
+<body>
+    <!-- ***** Header Area Start ***** -->
+    <div class="animate__animated animate__fadeInDown animate__delay-0.8s">
+      <header class="header-area">
+        <div class="container">
+          <div class="row">
+            <div class="col-12">
+                <nav class="main-nav">
+                  <!-- ***** Logo Start ***** -->
+                  <a href="/main" class="logo">
+                    <h4>Auto Watch <img src="/static/assets/images/자동감시로고_-removebg-preview.png" alt="" class="auto_logo"></h4>
+                  </a>
+                  <!-- ***** Logo End ***** -->
+                  <!-- ***** Menu Start ***** -->
+                  <ul class="nav">
+                    <li class="scroll-to-section"><a href="#features">My page</a></li>
+                    <li class="scroll-to-section"><a href="#services">History</a></li>
+                    <li class="scroll-to-section"><a href="/logout">Logout</a></li>
+                    <li class="scroll-to-section"><div class="main-blue-button"><a href="#contact">{{username}}님 안녕하세요.</a></div></li>
+                  </ul>
+                  <a class='menu-trigger'>
+                      <span>Menu</span>
+                  </a>
+                  <!-- ***** Menu End ***** -->
+                </nav>
             </div>
+          </div>
         </div>
-        <label class="mode" for="">Choose The Mode
-            <button onclick="location.href='/main/makeroom'">STUDY</button><button>EXAM</button>
-        </label>
-        <div class="file-creat"><input type="file"></div>
-        <div class="file-creat">
-            <button class="creat">Create</button>
+      </header>
+    </div>
+    <!-- ***** Header Area End ***** -->
+    <div class="main">
+      <div class="inner">
+        <div class="makeroom">
+            <img src="/static/assets/images/previous.png" alt="" class="back" onclick="location.href='/main'">
+            <span class="animate__animated animate__rubberBand" id="main-text">Make Your Room!</span>
+            <form method="POST">
+              {% csrf_token %}
+                    <!-- 크로스 도메인을 막기 위해 사용하느 코드 -->
+                    <div class="make-input">
+                        <label for="">Room name
+                            <input type="text" value="클릭하여 생성하기." class="room-name" id="room-name" name="room-name" readonly> 
+                        </label>
+                        <div class="animate__animated animate__shakeX animate__delay-1s" id="error1-animation">
+                          <span class="" id="error">
+                            {{name_error}}
+                          </span>
+                        </div>
+                        <div class="input-password">
+                            <label for="">Password
+                                <input type="text" placeholder="Room 비밀번호를 입력하세요." class="room-password" id="room-password" name="room-password" autocomplete="off">
+                            </label>
+                            <div class="animate__animated animate__shakeX animate__delay-1s" id="error2-animation">
+                              <span class="" id="error">
+                                {{password_error}}
+                              </span>
+                            </div>
+                        </div>
+                    </div>
+                    <label for="" class="mode">Choose The Mode</label>
+                        <input type="checkbox" id="study" name="study" class="checkbox" >
+                        <label for="study" class="checkbox" >STUDY</label>
+                        <input type="checkbox" id="exam" name="exam" class="checkbox">
+                        <label for="exam" class="checkbox">EXAM</label>
+                        <div class="animate__animated animate__shakeX animate__delay-1s" id="error3-animation">
+                          <span class="" id="error">
+                            {{mode_error}}
+                          </span>
+                        </div>
+                    <div class="file">
+                      <input type="file" id="file" name="file" accept=".xlsx">
+                      <div class="animate__animated animate__shakeX animate__delay-1s" id="error4-animation">
+                        <span class="" id="file-error">
+                            {{file_error}}
+                        </span>
+                      </div>
+                    </div>
+                    <button class="creat">Create</button>
+            </form>
         </div>
-    </form>
-</div>
-{% endblock%}
+      </div> 
+    </div>
+
+    <script>
+        function checkbox(e) {
+          var obj = document.getElementsByClassName("checkbox");
+          for (var i = 0; i < obj.length; i++) {
+            if (obj[i] != e) {
+              obj[i].checked = false;
+            }
+          }
+        }
+        var study = document.getElementById('study');
+        var exam = document.getElementById('exam');
+        study.addEventListener('click', function () {
+          checkbox(this);
+        });
+        exam.addEventListener('click', function () {
+          checkbox(this);
+        });
+
+        // function show(){
+        //   var f = document.getElementById('file');
+        //   if(f.style.display =='none'){
+        //     f.style.display = 'flex';
+        //   }
+        // }
+        // exam.addEventListener('click',function(){
+        //   show();
+        // });
+
+        let r = document.getElementById("room-name");
+        function room(){
+          var s = Math.random().toString(36).substr(2,7);
+          r.value = s.toUpperCase();
+          r.textContent = s;
+        }
+        r.addEventListener('click',room);
+        // let makeroom = document.getElementsByClassName('makeroom');
+        // makeroom.onload = function(){
+        //   make.addEventListener('click',room);
+        // }
+        // make.addEventListener('click',function(){
+        //   location.href='/main/makeroom';
+        // });
+    </script>
+ 
+</body>
+</html>
