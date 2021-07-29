@@ -12,7 +12,7 @@
 .back:hover{
     content: url(/static/assets/images/previous\ \(1\).png);
 }
-.makeroom span{
+.makeroom #main-text{
     font-size: 25px;
     color: #33ccc5;
     font-weight: 700;
@@ -20,7 +20,7 @@
     justify-content: center;
 }
 .makeroom form{
-    padding: 0 50px 0 50px;
+    padding: 0 0 0 50px;
     width: 100%;
     height: 80%;
     /* display: flex;
@@ -75,7 +75,7 @@
     font-size: large;
     font-weight: 600;
     margin-left: 100px;
-    margin-top: 80px;
+    margin-top: 60px;
 }
 .checkbox{
     font-size: 30px;
@@ -89,11 +89,12 @@ input[type="checkbox"]{
    position: relative;
    top: 4px;
 }
-.file{
-    display: flex;
+#file{
     margin-top: 40px;
     margin-left: 270px;
     font-size: large;
+    width: 290px;
+    height: 33px;
 }
 
 button.creat{
@@ -119,6 +120,18 @@ button.creat{
 button.creat:hover{
     background-color: #33ccc5;
     border-bottom: 3px solid #4771cb!important;
+}
+#error1-animation, #error2-animation, #error3-animation, #error4-animation{
+    display: inline-block;
+}
+#error{
+    color: red;
+    opacity: 0.7;
+    margin-left: 15px;
+}
+#file-error{
+    color: red;
+    opacity: 0.7;
 }
 
     /* enter STRAT */
