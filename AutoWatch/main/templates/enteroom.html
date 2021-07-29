@@ -1,16 +1,28 @@
 {%extends 'base.html'%}
 {% block content%}
 <div class="enteroom">
-    <span class="animate__animated animate__rubberBand animate__delay-1s">Enter Your Room!</span>
-    <form action="">        <!-- 수정해야함!!!!!!!!!!!!!!!! -->
+    <img src="/static/assets/images/previous.png" alt="" class="back" onclick="location.href='/main'">
+    <span class="animate__animated animate__rubberBand" id="enter-main-text">Enter Your Room!</span>
+    <form method="POST"> 
+        {% csrf_token %}      
         <div class="enter-input">
             <label for="">Room name
-                <input type="text" placeholder="Room 이름을 입력하세요.">
+                <input type="text" placeholder="Room 이름을 입력하세요." id="room_name" name="room_name" autocomplete="off">
             </label>
+            <div class="animate__animated animate__shakeX animate__delay-1s" id="error1-animation">
+                <span class="" id="error">
+                  {{name_error}}
+                </span>
+            </div>
             <div class="input-password">
                 <label for="">Password
-                    <input type="text"placeholder="Room 비밀번호를 입력하세요.">
+                    <input type="text"placeholder="Room 비밀번호를 입력하세요." id="room_password" name="room_password" autocomplete="off">
                 </label>
+                <div class="animate__animated animate__shakeX animate__delay-1s" id="error2-animation">
+                    <span class="" id="error">
+                      {{password_error}}
+                    </span>
+                </div>
             </div>
         </div>
         <div class="enter-div">
