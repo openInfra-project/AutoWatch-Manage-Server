@@ -34,7 +34,7 @@ def makeroom(request):
             request.session['file'] = file
             request.session['study'] = study
             request.session['exam'] = exam
-            request.session['maker'] = user.username
+            request.session['maker'] = maker
 
             if (len(room_name) > 7):
                 res_data['name_error'] = '방 이름을 생성해 주세요.'
@@ -51,7 +51,7 @@ def makeroom(request):
                         mode = 'STUDY'
                     elif exam and not(study):
                         mode = 'EXAM'
-                    room = Room(room_name=room_name, room_password=room_password, file=file,mode=mode ,maker=maker) # db에는 이메일 저장
+                    room = Room(room_name=room_name, room_password=room_password, file=file,mode=mode ,maker=maker) # db에 room 정보 저장
                     room.save()   
                     return redirect('/main/makeroom/success')
             return render(request,'makeroom.html',res_data)  # room 정보 비정상 일시
@@ -59,16 +59,20 @@ def makeroom(request):
 def make_success(request):
     res_data={}
     room_session = request.session.get('room_name')   # 아까 POST 할때 session에 저장한 값 불러옴
-    if room_session:
+    user_session = request.session.get('user')
+    if room_session and user_session:
+        user = User.objects.get(pk=user_session)
+        res_data['username'] = user.username
+        
         room = Room.objects.get(room_name=room_session)   # 가장 최근의 room_name과 session에 저장한 것을 비교함
         res_data['room_name'] = room.room_name
         res_data['room_password'] = room.room_password
         res_data['mode'] = room.mode
-        res_data['maker'] = request.session.get('maker')    # html에는 username 보여짐
+        res_data['maker'] = room.maker  
         if request.method == 'GET':
             return render(request,'make_success.html',res_data)
         elif request.method == 'POST':
-            return render(request,'make_success.html')
+            return render(request,'ssimong.html')
 
 def enteroom(request):
     res_data={}
@@ -95,8 +99,8 @@ def enteroom(request):
                     return render(request,'enteroom.html',res_data)
 
                 db_password = room.room_password
-                if db_password == room_password:
-                    return render(request, 'enter_success.html')
+                if db_password == room_password:     # room 정상 입장
+                    return render(request, 'ssimong.html')
                 else:
                     res_data['error'] = '비밀번호가 틀렸습니다.'
                     return render(request, 'enteroom.html',res_data)

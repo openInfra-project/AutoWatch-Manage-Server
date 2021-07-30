@@ -8,9 +8,9 @@
     <link href="/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <!-- Additional CSS Files -->
     <link rel="stylesheet" href="/static/assets/css/fontawesome.css">
-    <link rel="stylesheet" href="/static/assets/css/templatemo-seo-dream.css">
+    <link rel="stylesheet" href="/static/assets/css/templatemo-seo-dream.css?after">
     <link rel="stylesheet" href="/static/assets/css/main.css">
-    <link rel="stylesheet" href="/static/assets/css/makeroom.css?after">
+    <link rel="stylesheet" href="/static/assets/css/makeroom.css">
     <link rel="stylesheet" href="/static/assets/css/animated.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link rel="stylesheet" href="/static/assets/css/owl.css">
@@ -49,65 +49,8 @@
     <div class="main">
       <div class="inner">
         {%block content%}
-        
         {% endblock %}
       </div> 
     </div>
-
-
-
-    <!-- <script>
-        function checkbox(e) {
-          var obj = document.getElementsByClassName("checkbox");
-          for (var i = 0; i < obj.length; i++) {
-            if (obj[i] != e) {
-              obj[i].checked = false;
-            }
-          }
-        }
-        var study = document.getElementById('study');
-        var exam = document.getElementById('exam');
-        
-        study.addEventListener('click', function () {
-          checkbox(this);
-        });
-        exam.addEventListener('click', function () {
-          checkbox(this);
-        });
-
-        function show(){
-          var f = document.getElementById('file');
-          if(f.style.display =='none'){
-            f.style.display = 'flex';
-          }
-        }
-        exam.addEventListener('click',function(){
-          show();
-        });
-        let r = document.getElementById("room-name");
-        function room(){
-          var s = Math.random().toString(36).substr(2,7);
-          r.placeholder = s.toUpperCase();
-        }
-
-        let make = document.getElementById('make-room');
-        let makeroom = document.getElementsByClassName('makeroom');
-        makeroom.onload = function(){
-          make.addEventListener('click',room);
-        }
-        make.addEventListener('click',function(){
-          location.href='/main/makeroom';
-        });
-    </script> -->
-    <script>
-      let make = document.getElementById('make-room');
-      make.addEventListener('click',function(){
-          location.href='/main/makeroom';
-          let r = document.getElementById("room-name");
-          var s = Math.random().toString(36).substr(2,7);
-          r.placeholder = s.toUpperCase();
-      });
-    </script>
- 
 </body>
 </html>
