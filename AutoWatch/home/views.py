@@ -24,15 +24,16 @@ def home(request):
             res_data['error'] = '비밀번호가 다릅니다.'
             return render(request, 'home.html', res_data)
         else:  # 아이디 중복 체크
-            user = User.objects.get(email=email)
+            try:
+                user = User.objects.get(email=email)    # 아이디가 있는지 확인 해보고
+            except User.DoesNotExist:                   # 아이디가 없어서 DoesNotExist이면 저장한다.
+                user = User(email=email, username=username, password=make_password(password))
+                user.save()
+                return redirect('/login')
             if(user):
                 res_data['error'] = '존재하는 Email 입니다.'
                 return render(request, 'home.html', res_data)
-
-        # 위의 조건문에서 걸리지 않으면 회원가입 성공
-        user = User(email=email, username=username, password=password)
-        user.save()
-        return redirect('/login')
+                
 
 # 로그인
 
