@@ -4,6 +4,7 @@ from .models import User
 
 # 회원가입
 def home(request):
+    res_data={}
     if request.method =='GET':
         return render(request,'home.html')
     elif request.method == 'POST':
@@ -13,12 +14,13 @@ def home(request):
         re_password = request.POST.get('re-password',None)
 
         if password != re_password:
-            return HttpResponse('비밀번호가 다릅니다!')
+            res_data['error'] = '비밀 번호가 다릅니다.'
+            return render(request, 'home.html', res_data,context='#contact')
 
         user = User(email=email,username=username,password=password)
         user.save()
 
-        return render(request, 'login.html')    
+        return redirect('/login')
 
 #로그인
 def login(request):
