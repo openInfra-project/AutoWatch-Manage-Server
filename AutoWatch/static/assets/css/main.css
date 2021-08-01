@@ -59,3 +59,9 @@ html,body{
 .main-section:hover{
     border-color: #228be6;
 }
+
+.mypage{
+    width: 400px;
+    height: 500px;
+    background-color: #ced4da;
+}

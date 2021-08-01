@@ -1,12 +1,66 @@
-{%extends 'base.html'%}
-{% block content%}
-<div class="main-section" id="make-room" onclick="location.href='/main/makeroom'">
-    <img src="/static/assets/images/door.png" alt="" class="animate__animated animate__slideInLeft">
-    <span>Make Room</span>
-</div>
-<div class="main-section" onclick="location.href='/main/enteroom'">
-    <img src="/static/assets/images/enter.png" alt="" class="animate__animated animate__slideInRight">
-    <span>Enter Room</span>
-</div>
+<!DOCTYPE html>
+<html lang="ko" id="make_html">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoWatch</title>
+    <link href="/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Additional CSS Files -->
+    <link rel="stylesheet" href="/static/assets/css/fontawesome.css">
+    <link rel="stylesheet" href="/static/assets/css/templatemo-seo-dream.css">
+    <link rel="stylesheet" href="/static/assets/css/main.css">
+    <link rel="stylesheet" href="/static/assets/css/makeroom.css?after">
+    <link rel="stylesheet" href="/static/assets/css/animated.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="/static/assets/css/owl.css">
+</head>
+<body>
+    <!-- ***** Header Area Start ***** -->
+    <div class="animate__animated animate__fadeInDown animate__delay-0.8s">
+      <header class="header-area">
+        <div class="container">
+          <div class="row">
+            <div class="col-12">
+                <nav class="main-nav">
+                  <!-- ***** Logo Start ***** -->
+                  <a href="/main" class="logo">
+                    <h4>Auto Watch <img src="/static/assets/images/자동감시로고_-removebg-preview.png" alt="" class="auto_logo"></h4>
+                  </a>
+                  <!-- ***** Logo End ***** -->
+                  <!-- ***** Menu Start ***** -->
+                  <ul class="nav">
+                    <li class="scroll-to-section"><a href="#features">My page</a></li>
+                    <li class="scroll-to-section"><a href="#services">History</a></li>
+                    <li class="scroll-to-section"><a href="/logout">Logout</a></li>
+                    <li class="scroll-to-section"><div class="main-blue-button"><a href="#contact">{{username}}님 안녕하세요.</a></div></li>
+                  </ul>
+                  <a class='menu-trigger'>
+                      <span>Menu</span>
+                  </a>
+                  <!-- ***** Menu End ***** -->
+                </nav>
+            </div>
+          </div>
+        </div>
+      </header>
+    </div>
+    <!-- ***** Header Area End ***** -->
+    <div class="main">
+        <!-- <div class="mypage">
+            마이페이지
+        </div> -->
+      <div class="inner">
+        <div class="main-section" id="make-room" onclick="location.href='/main/makeroom'">
+            <img src="/static/assets/images/door.png" alt="" class="animate__animated animate__slideInLeft">
+            <span>Make Room</span>
+        </div>
+        <div class="main-section" onclick="location.href='/main/enteroom'">
+            <img src="/static/assets/images/enter.png" alt="" class="animate__animated animate__slideInRight">
+            <span>Enter Room</span>
+        </div>
+      </div> 
+    </div>
 
-{% endblock%}
+</body>
+</html>
