@@ -31,7 +31,7 @@ def home(request):
 #로그인
 def login(request):
     if request.method =='GET':
-        return render(request, 'login.html')
+        return render(request, 'login.html')   
     elif request.method =='POST':
         email = request.POST.get('email',None)
         password = request.POST.get('password',None)
