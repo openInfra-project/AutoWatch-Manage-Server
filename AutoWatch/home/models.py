@@ -9,7 +9,8 @@ class User(models.Model):
     password = models.CharField(max_length=64, verbose_name="비밀번호")
     registerd_date = models.DateTimeField(
         auto_now_add=True, verbose_name='등록시간')
-    image = models.ImageField(null=True, verbose_name='이미지')
+    image = models.ImageField(
+        upload_to="userimg", null=True, verbose_name='이미지')
 
     def __str__(self):
         return self.email
