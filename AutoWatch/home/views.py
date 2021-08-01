@@ -4,6 +4,7 @@ from .models import User
 
 # 회원가입
 def home(request):
+    res_data={}
     if request.method =='GET':
         return render(request,'home.html')
     elif request.method == 'POST':
@@ -13,12 +14,19 @@ def home(request):
         re_password = request.POST.get('re-password',None)
 
         if password != re_password:
-            return HttpResponse('비밀번호가 다릅니다!')
+            res_data['error'] = '비밀번호가 다릅니다.'
+            return render(request, 'home.html', res_data)
+        else:  # 아이디 중복 체크
+            user = User.objects.get(email=email)
+            if(user):
+                res_data['error'] = '존재하는 Email 입니다.'
+                return render(request, 'home.html', res_data)
 
+        # 위의 조건문에서 걸리지 않으면 회원가입 성공
         user = User(email=email,username=username,password=password)
         user.save()
 
-        return render(request, 'login.html')    
+        return redirect('/login')
 
 #로그인
 def login(request):
