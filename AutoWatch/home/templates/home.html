@@ -311,7 +311,7 @@
               <input type="password" id="password"  name="password" placeholder="비밀번호" autocomplete="off">
               <input type="password" id="re-password" name="re-password" placeholder="비밀번호 확인" autocomplete="off">
             </div>
-            <div class="animate__animated animate__shakeX animate__delay-1s">
+            <div class="animate__animated animate__shakeX animate__delay-2s">
               <div class="error">
                   {{error}}
               </div>
@@ -337,7 +337,20 @@
       </div>
     </div>
   </footer>
-
+  <script>
+    // let error = JSON.parse("{{ error|escapejs }}");
+    // console.log(error);
+    // if (error =='비밀번호가 다릅니다.'){
+    //   window.scrollTo(1000,3100);
+    // }
+    // if(Request.method == 'POST'){
+    //   window.scrollTo(1000,3100);
+    // }
+    let a = "{{error}}"
+    if(a){
+      window.scrollTo(1000,3090);
+    }
+  </script>
   <!-- Scripts -->
   <script src="static/vendor/jquery/jquery.min.js"></script>
   <script src="static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
