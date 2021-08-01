@@ -2,6 +2,7 @@ from django.http import response
 from django.shortcuts import redirect, render
 from home.models import User
 from .models import Room
+import string, random
 
 def main(request):
     res_data={}
@@ -21,6 +22,7 @@ def makeroom(request):
         user = User.objects.get(pk=user_session)
         res_data['username'] = user.username                # 로그인 체크
         if request.method == 'GET':
+            res_data['string'] = ''.join(random.choice(string.ascii_uppercase + string.digits)for _ in range(7))  # 랜덤 문자열 생성
             return render(request,'makeroom.html',res_data)
         elif request.method == 'POST':
             room_name = request.POST.get('room-name',None)

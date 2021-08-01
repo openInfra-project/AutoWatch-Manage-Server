@@ -96,6 +96,9 @@ input[type="checkbox"]{
     width: 290px;
     height: 33px;
 }
+/* .file-js{
+    display: none;
+} */
 
 button.creat{
     /* position: absolute;
