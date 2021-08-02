@@ -27,13 +27,14 @@ def home(request):
             try:
                 user = User.objects.get(email=email)    # 아이디가 있는지 확인 해보고
             except User.DoesNotExist:                   # 아이디가 없어서 DoesNotExist이면 저장한다.
-                user = User(email=email, username=username, password=make_password(password))
+                user = User(email=email, username=username,
+                            password=make_password(password))
                 user.save()
                 return redirect('/login')
             if(user):
                 res_data['error'] = '존재하는 Email 입니다.'
                 return render(request, 'home.html', res_data)
-                
+
 
 # 로그인
 
@@ -139,8 +140,10 @@ def app_image(request):
         fs = FileSystemStorage()
         res_data['image_url'] = fs.url(image.name)
         text = list(image.name)
+        print(text)
         del text[len(text)-4:len(text)]
         a = ''.join(text)
+        print(a)
         myuser = User.objects.get(email=a)
         myuser.image = image
         myuser.save()

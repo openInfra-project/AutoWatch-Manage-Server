@@ -2,32 +2,41 @@ from django.http import response
 from django.shortcuts import redirect, render
 from home.models import User
 from .models import Room
-import string, random
+import string
+import random
+import simplejson
+from django.core.files.storage import FileSystemStorage
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from django.http.response import HttpResponse
+from django.core import serializers
+
 
 def main(request):
-    res_data={}
-    user_session = request.session.get('user')               #로그인 체크
+    res_data = {}
+    user_session = request.session.get('user')  # 로그인 체크
     if user_session:
         user = User.objects.get(pk=user_session)
         res_data['username'] = user.username
-        return render(request,'main.html',res_data)
+        return render(request, 'main.html', res_data)
     else:
-        return render(request,'login.html')
+        return render(request, 'login.html')
 
 
 def makeroom(request):
-    res_data={}
+    res_data = {}
     user_session = request.session.get('user')
     if user_session:
         user = User.objects.get(pk=user_session)
         res_data['username'] = user.username                # 로그인 체크
         if request.method == 'GET':
-            res_data['string'] = ''.join(random.choice(string.ascii_uppercase + string.digits)for _ in range(7))  # 랜덤 문자열 생성
-            return render(request,'makeroom.html',res_data)
+            res_data['string'] = ''.join(random.choice(
+                string.ascii_uppercase + string.digits)for _ in range(7))  # 랜덤 문자열 생성
+            return render(request, 'makeroom.html', res_data)
         elif request.method == 'POST':
-            room_name = request.POST.get('room-name',None)
-            room_password = request.POST.get('room-password',None)
-            file = request.POST.get('file',None)
+            room_name = request.POST.get('room-name', None)
+            room_password = request.POST.get('room-password', None)
+            file = request.POST.get('file', None)
             study = request.POST.getlist('study')
             exam = request.POST.getlist('exam')
             maker = user.email
@@ -43,47 +52,53 @@ def makeroom(request):
             elif not(room_password):
                 res_data['password_error'] = '비밀번호를 생성해 주세요.'
             elif not(study or exam):
-                res_data['mode_error'] = 'Mode를 선택해 주세요.'    
+                res_data['mode_error'] = 'Mode를 선택해 주세요.'
             else:
                 if (exam and not(file)):
                     res_data['file_error'] = 'Exam Mode는 명단 첨부가 필수 입니다.'
-                    return render(request,'makeroom.html',res_data)  # room 정보 비정상 일시
+                    # room 정보 비정상 일시
+                    return render(request, 'makeroom.html', res_data)
                 else:  # 정상적으로 room 정보 기입시
                     if study and not(exam):     # mode를 db에 저장
                         mode = 'STUDY'
                     elif exam and not(study):
                         mode = 'EXAM'
-                    room = Room(room_name=room_name, room_password=room_password, file=file,mode=mode ,maker=maker) # db에 room 정보 저장
-                    room.save()   
+                    room = Room(room_name=room_name, room_password=room_password,
+                                file=file, mode=mode, maker=maker)  # db에 room 정보 저장
+                    room.save()
                     return redirect('/main/makeroom/success')
-            return render(request,'makeroom.html',res_data)  # room 정보 비정상 일시
-    
+            return render(request, 'makeroom.html', res_data)  # room 정보 비정상 일시
+
+
 def make_success(request):
-    res_data={}
-    room_session = request.session.get('room_name')   # 아까 POST 할때 session에 저장한 값 불러옴
+    res_data = {}
+    room_session = request.session.get(
+        'room_name')   # 아까 POST 할때 session에 저장한 값 불러옴
     user_session = request.session.get('user')
     if room_session and user_session:
         user = User.objects.get(pk=user_session)
         res_data['username'] = user.username
-        
-        room = Room.objects.get(room_name=room_session)   # 가장 최근의 room_name과 session에 저장한 것을 비교함
+
+        # 가장 최근의 room_name과 session에 저장한 것을 비교함
+        room = Room.objects.get(room_name=room_session)
         res_data['room_name'] = room.room_name
         res_data['room_password'] = room.room_password
         res_data['mode'] = room.mode
-        res_data['maker'] = room.maker  
+        res_data['maker'] = room.maker
         if request.method == 'GET':
-            return render(request,'make_success.html',res_data)
+            return render(request, 'make_success.html', res_data)
         elif request.method == 'POST':
-            return render(request,'ssimong.html')
+            return render(request, 'ssimong.html')
+
 
 def enteroom(request):
-    res_data={}
+    res_data = {}
     user_session = request.session.get('user')
     if user_session:
         user = User.objects.get(pk=user_session)
         res_data['username'] = user.username
         if request.method == 'GET':
-            return render(request,'enteroom.html',res_data)
+            return render(request, 'enteroom.html', res_data)
         elif request.method == 'POST':
             room_name = request.POST.get('room_name')
             room_password = request.POST.get('room_password')
@@ -95,15 +110,181 @@ def enteroom(request):
                 res_data['all_error'] = '모든 값을 입력하세요.'
             else:
                 try:
-                    room = Room.objects.get(room_name=room_name) # 필드명 = 값 이면 Room 객체 생성
+                    # 필드명 = 값 이면 Room 객체 생성
+                    room = Room.objects.get(room_name=room_name)
                 except Room.DoesNotExist:
                     res_data['error'] = '존재하지 않는 Room 입니다.'    # room이 없는 예외 처리
-                    return render(request,'enteroom.html',res_data)
+                    return render(request, 'enteroom.html', res_data)
 
                 db_password = room.room_password
                 if db_password == room_password:     # room 정상 입장
                     return render(request, 'ssimong.html')
                 else:
                     res_data['error'] = '비밀번호가 틀렸습니다.'
-                    return render(request, 'enteroom.html',res_data)
-            return render(request,'enteroom.html',res_data)  # room 정보 비정상 일시
+                    return render(request, 'enteroom.html', res_data)
+            return render(request, 'enteroom.html', res_data)  # room 정보 비정상 일시
+
+
+# 앱 이름 비번 명단 모두 제출시
+@method_decorator(csrf_exempt, name='dispatch')
+def app_makeroom(request):
+
+    if request.method == "GET":
+        return render(request, 'make_room.html')
+    if request.method == "POST":
+        print("post임")
+        res_data = {}
+        myfile = request.FILES['files']
+        print(myfile)
+        # fs = FileSystemStorage()
+        # res_data['file_url'] = fs.url(myfile.name)
+        myemail = request.POST.get('admin')
+        myadmin = User.objects.get(email=myemail)
+        myname = request.POST.get('name')
+        mypass = request.POST.get('pass')
+        mycheckbox = request.POST.get('checkbox')
+        print(myemail)
+        print(myname)
+        print(mypass)
+        print(mycheckbox)
+        myuser = Room(room_name=myname, room_password=mypass,
+                      maker=myadmin, mode=mycheckbox)
+        myuser.file = myfile
+        myuser.save()
+
+        # test = json.loads(request.body)
+        # myemail = test.get('admin')  # 아이디(이멜)
+
+        # myname = test.get('name')
+        # mypass = test.get('pass')
+        # mycheckbox = test.get('checkbox')
+        # print(myname)
+        # #fs = FileSystemStorage()
+        # #res_data['file_url'] = fs.url(file.name)
+        # print(myfile)
+
+        return HttpResponse(simplejson.dumps({"file": "ok"}))
+
+
+# 앱 이름 비번만 제출시
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+def app_makemyroom(request):
+    if request.method == "GET":
+        return render(request, 'home/make_room.html')
+    if request.method == "POST":
+        #res_data = {}
+        myemail = request.POST.get('admin')  # 아이디(이멜)
+        myadmin = User.objects.get(email=myemail)
+        roomname = request.POST.get('roomname')
+        password = request.POST.get('password')
+        mycheckbox = request.POST.get('checkbox')
+        myuser = Room(room_name=roomname, room_password=password,
+                      maker=myadmin, mode=mycheckbox)
+        myuser.save()
+        print(myuser)
+        return HttpResponse(simplejson.dumps({"roomname": roomname, "password": password}))
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+def app_enterroom(request):
+    # 앱에서 오는 로그인 요청
+    if request.method == "POST":
+        roomname = request.POST.get('roomname', None)
+        password = request.POST.get('password', None)
+        # 받은 이메일이랑 비밀번호 =데이터와 일치하면
+        # 리턴값으로 숫자 200 = 로그인 성공
+        # 일치 안하면 숫자 100 = 로그인 실패
+        if Room.objects.filter(room_name=roomname).exists():
+            room = Room.objects.get(room_name=roomname)
+            room_type = room.mode         # 룸 모드 가져오기
+            # db에서 꺼내는 명령.Post로 받아온 username으로 , db의 username을 꺼내온다.
+            print(password)
+            print(room.room_password)
+            if password == room.room_password:
+                print(room.room_password)
+                print(room_type)
+
+                # 세션도 딕셔너리 변수 사용과 똑같이 사용하면 된다.
+                # 세션 user라는 key에 방금 로그인한 id를 저장한것.
+                # room_type(exam mode, study mode)구분해서 들고오기
+                return HttpResponse(simplejson.dumps({"roomname": room_type}))
+            else:
+                # 방 비번 불일치
+                return HttpResponse(simplejson.dumps({"roomname": "Fail"}))
+
+        else:
+            # 방 없음
+            return HttpResponse(simplejson.dumps({"roomname": "None"}))
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+def app_myroom(request):
+    if request.method == "POST":
+        email = request.POST.get('email', None)
+        print(email)
+        # 받은 이메일이랑 비밀번호 =데이터와 일치하면
+        # 리턴값으로 숫자 200 = 로그인 성공
+        # 일치 안하면 숫자 100 = 로그인 실패
+        admin = User.objects.get(email=email)
+        rooms = Room.objects.filter(maker=admin)
+
+        # roomlist = []
+        print(rooms)
+        roomlist = serializers.serialize('json', rooms)
+
+        return HttpResponse(roomlist, content_type="text/json-comment-filtered")
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+def app_entermyroom(request):
+    # 앱에서 오는 로그인 요청
+    if request.method == "POST":
+        roomname = request.POST.get('roomname', None)
+
+        # 받은 이메일이랑 비밀번호 =데이터와 일치하면
+        # 리턴값으로 숫자 200 = 로그인 성공
+        # 일치 안하면 숫자 100 = 로그인 실패
+        if Room.objects.filter(room_name=roomname).exists():
+            room = Room.objects.get(room_name=roomname)
+            room_type = room.mode        # 룸 모드 가져오기
+            # db에서 꺼내는 명령.Post로 받아온 username으로 , db의 username을 꺼내온다.
+
+            return HttpResponse(simplejson.dumps({"roomname": room_type}))
+
+
+# 이미지 비교해야함
+
+@method_decorator(csrf_exempt, name='dispatch')
+def app_images(request):
+    if request.method == "POST":
+        res_data = {}
+        a = request.FILES
+        image = a['image']
+        print(image)
+        fs = FileSystemStorage()
+        filename = fs.save("capture/"+image.name, image)
+        uploaded_file_url = fs.url(filename)
+        print(filename)
+        print(uploaded_file_url)
+        text = list(image.name)
+        del text[len(text)-4:len(text)]
+        a = ''.join(text)
+        return HttpResponse(simplejson.dumps({"image": "ok"}))  # 이미지 전송완료
+
+# EXAM방 입장시 학번,이름 매칭확인
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+def app_checkmyinfo(request):
+    if request.method == "POST":
+        name = request.POST.get('name', None)
+        number = request.POST.get('number', None)
+
+        print(name)
+        print(number)
+
+        # 엑셀파일에서 비교
+
+        return HttpResponse(simplejson.dumps({"roomname": "yes"}))
