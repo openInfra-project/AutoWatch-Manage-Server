@@ -6,10 +6,13 @@ import string, random
 
 def main(request):
     res_data={}
-    user_session = request.session.get('user')               #로그인 체크
+    user_session = request.session.get('user')              # 로그인 체크
     if user_session:
         user = User.objects.get(pk=user_session)
-        res_data['username'] = user.username
+        res_data['username'] = user.username                # mypage 정보
+        res_data['email'] = user.email
+        res_data['register'] = user.registerd_date
+        # res_data['userimg'] = user.img
         return render(request,'main.html',res_data)
     else:
         return render(request,'login.html')
@@ -19,10 +22,12 @@ def makeroom(request):
     res_data={}
     user_session = request.session.get('user')
     if user_session:
-        user = User.objects.get(pk=user_session)
-        res_data['username'] = user.username                # 로그인 체크
+        user = User.objects.get(pk=user_session)            # 로그인 체크
+        res_data['username'] = user.username                # mypage 정보
+        res_data['email'] = user.email                      
+        res_data['register'] = user.registerd_date
+        res_data['string'] = ''.join(random.choice(string.ascii_uppercase + string.digits)for _ in range(7))  # 랜덤 문자열 생성
         if request.method == 'GET':
-            res_data['string'] = ''.join(random.choice(string.ascii_uppercase + string.digits)for _ in range(7))  # 랜덤 문자열 생성
             return render(request,'makeroom.html',res_data)
         elif request.method == 'POST':
             room_name = request.POST.get('room-name',None)
@@ -31,7 +36,7 @@ def makeroom(request):
             study = request.POST.getlist('study')
             exam = request.POST.getlist('exam')
             maker = user.email
-
+            
             request.session['room_name'] = room_name
             request.session['file'] = file
             request.session['study'] = study
@@ -46,7 +51,7 @@ def makeroom(request):
                 res_data['mode_error'] = 'Mode를 선택해 주세요.'    
             else:
                 if (exam and not(file)):
-                    res_data['file_error'] = 'Exam Mode는 명단 첨부가 필수 입니다.'
+                    res_data['mode_error'] = 'Exam Mode는 명단 첨부가 필수 입니다.'
                     return render(request,'makeroom.html',res_data)  # room 정보 비정상 일시
                 else:  # 정상적으로 room 정보 기입시
                     if study and not(exam):     # mode를 db에 저장
@@ -63,8 +68,10 @@ def make_success(request):
     room_session = request.session.get('room_name')   # 아까 POST 할때 session에 저장한 값 불러옴
     user_session = request.session.get('user')
     if room_session and user_session:
-        user = User.objects.get(pk=user_session)
-        res_data['username'] = user.username
+        user = User.objects.get(pk=user_session)    # 로그인 체크
+        res_data['username'] = user.username        # mypage 정보
+        res_data['email'] = user.email
+        res_data['register'] = user.registerd_date
         
         room = Room.objects.get(room_name=room_session)   # 가장 최근의 room_name과 session에 저장한 것을 비교함
         res_data['room_name'] = room.room_name
@@ -80,8 +87,10 @@ def enteroom(request):
     res_data={}
     user_session = request.session.get('user')
     if user_session:
-        user = User.objects.get(pk=user_session)
-        res_data['username'] = user.username
+        user = User.objects.get(pk=user_session)    # 로그인 체크
+        res_data['username'] = user.username        # mypage 정보
+        res_data['email'] = user.email
+        res_data['register'] = user.registerd_date
         if request.method == 'GET':
             return render(request,'enteroom.html',res_data)
         elif request.method == 'POST':

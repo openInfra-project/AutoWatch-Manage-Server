@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="/static/assets/css/owl.css">
 </head>
 <body>
+  <div class="king" id="king">
     <!-- ***** Header Area Start ***** -->
     <div class="animate__animated animate__fadeInDown animate__delay-0.8s">
       <header class="header-area">
@@ -30,10 +31,10 @@
                   <!-- ***** Logo End ***** -->
                   <!-- ***** Menu Start ***** -->
                   <ul class="nav">
-                    <li class="scroll-to-section"><a href="#features">My page</a></li>
+                    <li class="scroll-to-section"><a id="nav_mypage" name="nav_mypage">My page</a></li>
                     <li class="scroll-to-section"><a href="#services">History</a></li>
                     <li class="scroll-to-section"><a href="/logout">Logout</a></li>
-                    <li class="scroll-to-section"><div class="main-blue-button"><a href="#contact">{{username}}님 안녕하세요.</a></div></li>
+                    <li class="scroll-to-section"><div class="main-blue-button"><a id="nav_mypage2" name="nav_mypage2">{{username}}님 안녕하세요.</a></div></li>
                   </ul>
                   <a class='menu-trigger'>
                       <span>Menu</span>
@@ -52,5 +53,52 @@
         {% endblock %}
       </div> 
     </div>
+  </div>
+  <div class="animate__animated animate__slideInRight" id="mypage">
+    <div class="mypage-inner">
+      <img src="/static/assets/images/cancel.png" alt="" class="cancel" id="cancel" name="cancel">
+      <span class="my_text">My Page</span>
+      <!-- <div class="user-img"> -->
+        <img src="/static/assets/images/face-recognition.png" alt="" id="user-img">
+      <!-- </div> -->
+      <div class="user-email">
+        <img src="/static/assets/images/email.png" alt="" class="info"><span class="main-span">Email: </span><span class="sub-span">{{email}}</span>
+      </div>
+      <div class="user-name">
+        <img src="/static/assets/images/user.png" alt="" class="info"><span class="main-span">Name: </span><span class="sub-span">{{username}}</span>
+      </div>
+      <div class="user-register">
+        <img src="/static/assets/images/schedule.png" alt="" class="info"><span class="main-span">Date: </span><span class="sub-span">{{register}}</span>
+      </div>
+      <form method="POST">
+        <button class="user-img-btn">이미지 설정하기</button>
+      </form>
+    </div>
+</div>
+
+
+
+<script>
+  let my = document.getElementById('mypage');  // my page
+  let btn2 = document.getElementById('nav_mypage2'); // 상단바의 두번째 my page 버튼
+  let btn = document.getElementById('nav_mypage');  // 상단바의 mypage 버튼
+  let king = document.getElementById('king');  // background 설정
+  btn.addEventListener('click', function(){
+    my.style.display ='flex';
+    king.style.opacity = '0.5';
+    king.style.pointerEvents = 'none';
+  })
+ btn2.addEventListener('click',function(){
+    my.style.display ='flex';
+    king.style.opacity = '0.5';
+    king.style.pointerEvents = 'none';
+ })
+  let exit = document.getElementById('cancel');
+  exit.addEventListener('click',function(){
+    king.style.opacity = '1';
+    king.style.pointerEvents = 'all';
+    my.style.display ='none';
+  })
+</script>
 </body>
 </html>
