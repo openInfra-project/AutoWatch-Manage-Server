@@ -19,17 +19,17 @@ def main(request):
 
         if res_data['userimg'] == "/media/":               # 이미지 체크
             res_data['check'] = 0
-            return render(request,'main.html',res_data)
         else:
             res_data['check'] = 1
-            if request.method == 'GET':
-                return render(request,'main.html',res_data)
-            elif request.method == 'POST':
-                userimage = request.FILES['user-img-change']
-                res_data['userimg'] = fs.url(userimage)
-                user.image = userimage
-                user.save()
-                return render(request,'main.html',res_data)
+            
+        if request.method == 'GET':
+            return render(request,'main.html',res_data)
+        elif request.method == 'POST':
+            userimage = request.FILES['user-img-change']
+            res_data['userimg'] = fs.url(userimage)
+            user.image = userimage
+            user.save()
+            return render(request,'main.html',res_data)
     else:
         return redirect('/login')
 
