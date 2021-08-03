@@ -9,7 +9,7 @@
     <!-- Additional CSS Files -->
     <link rel="stylesheet" href="/static/assets/css/fontawesome.css">
     <link rel="stylesheet" href="/static/assets/css/templatemo-seo-dream.css">
-    <link rel="stylesheet" href="/static/assets/css/main.css?after?after?after">
+    <link rel="stylesheet" href="/static/assets/css/main.css?after">
     <link rel="stylesheet" href="/static/assets/css/makeroom.css?after">
     <link rel="stylesheet" href="/static/assets/css/animated.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
@@ -64,9 +64,11 @@
         <div class="mypage-inner">
           <img src="/static/assets/images/cancel.png" alt="" class="cancel" id="cancel" name="cancel">
           <span class="my_text">My Page</span>
-          <!-- <div class="user-img"> -->
+          {% if check == 0 %}
             <img src="/static/assets/images/face-recognition.png" alt="" id="user-img">
-          <!-- </div> -->
+          {% else %}
+            <img src="{{userimg}}" alt="" id="user-img">
+          {%endif%}
           <div class="user-email">
             <img src="/static/assets/images/email.png" alt="" class="info"><span class="main-span">Email: </span><span class="sub-span">{{email}}</span>
           </div>
@@ -76,8 +78,11 @@
           <div class="user-register">
             <img src="/static/assets/images/schedule.png" alt="" class="info"><span class="main-span">Date: </span><span class="sub-span">{{register}}</span>
           </div>
-          <form method="POST">
-            <button class="user-img-btn">이미지 설정하기</button>
+          <form method="POST" id="edit" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="user-img-change" class="user-img-change">이미지 설정하기</label>
+            <input type="file" id="user-img-change" name="user-img-change" accept=".png, .jpeg, .jpg">
+            <button class="user-img-btn" id="user-img-btn" name="user-img-btn">변경하기</button>
           </form>
         </div>
     </div>
@@ -85,6 +90,7 @@
 
 
     <script>
+      // 모달 이벤트
       let my = document.getElementById('mypage');  // my page
       let btn2 = document.getElementById('nav_mypage2'); // 상단바의 두번째 my page 버튼
       let btn = document.getElementById('nav_mypage');  // 상단바의 mypage 버튼
@@ -104,6 +110,14 @@
         king.style.opacity = '1';
         king.style.pointerEvents = 'all';
         my.style.display ='none';
+      })
+
+      // 모달안에 사진 변경 이벤트
+      let file = document.getElementById('user-img-change');
+      let file_submit = document.getElementById('user-img-btn');
+      file.addEventListener('click',function(){
+        file.style.marginLeft = '70px'
+        file_submit.style.display = 'inline'
       })
     </script>
 
