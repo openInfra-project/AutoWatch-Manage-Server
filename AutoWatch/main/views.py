@@ -1,15 +1,19 @@
+from django.db.models.fields import NullBooleanField
+from django.db.models.query import QuerySet
 from django.http import response
 from django.shortcuts import redirect, render
 from home.models import User
 from .models import Room
-import string
-import random
+import string, random
+from django.views.generic import ListView
+
 import simplejson
 from django.core.files.storage import FileSystemStorage
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.http.response import HttpResponse
 from django.core import serializers
+
 
 
 def main(request):
@@ -24,9 +28,9 @@ def main(request):
         res_data['userimg'] = fs.url(user.image)
 
         if res_data['userimg'] == "/media/":               # 이미지 체크
-            res_data['check'] = 0
+            res_data['img_check'] = 0                      # 이미지 널
         else:
-            res_data['check'] = 1
+            res_data['img_check'] = 1
 
         if request.method == 'GET':
             return render(request, 'main.html', res_data)
@@ -35,6 +39,7 @@ def main(request):
             res_data['userimg'] = fs.url(userimage)
             user.image = userimage
             user.save()
+            res_data['img_check'] = 1
             return render(request, 'main.html', res_data)
     else:
         return redirect('/login')
@@ -54,9 +59,9 @@ def makeroom(request):
         res_data['userimg'] = fs.url(user.image)
 
         if res_data['userimg'] == "/media/":               # 이미지가 있는지 체크
-            res_data['check'] = 0
+            res_data['img_check'] = 0
         else:
-            res_data['check'] = 1
+            res_data['img_check'] = 1
 
         if request.method == 'GET':
             return render(request, 'makeroom.html', res_data)
@@ -66,6 +71,7 @@ def makeroom(request):
                 # 이미지 변경 저장
                 userimage = request.FILES['user-img-change']
                 res_data['userimg'] = fs.url(userimage)
+                res_data['img_check'] = 1
                 user.image = userimage
                 user.save()
                 return render(request, 'makeroom.html', res_data)
@@ -73,14 +79,17 @@ def makeroom(request):
                 # makeroom POST 값
                 room_name = request.POST.get('room-name', None)
                 room_password = request.POST.get('room-password', None)
-                file = request.POST.get('file', None)
                 study = request.POST.getlist('study')
                 exam = request.POST.getlist('exam')
                 maker = user.email
-
+                print("!!!!!!!!!!!!!!!!!1",exam,study)
+                if exam and not(study):
+                    file = request.FILES['file']
+                elif study and not(exam):
+                    file = "NULL"
                 # makeroom POST 값 저장
                 request.session['room_name'] = room_name
-                request.session['file'] = file
+                # request.session['file'] = file
                 request.session['study'] = study
                 request.session['exam'] = exam
                 request.session['maker'] = maker
@@ -133,9 +142,9 @@ def make_success(request):
         res_data['userimg'] = fs.url(user.image)
 
         if res_data['userimg'] == "/media/":               # 이미지 체크
-            res_data['check'] = 0
+            res_data['img_check'] = 0
         else:
-            res_data['check'] = 1
+            res_data['img_check'] = 1
         if request.method == 'GET':
             return render(request, 'make_success.html', res_data)
         elif request.method == 'POST':
@@ -144,11 +153,15 @@ def make_success(request):
                 # 이미지 변경 저장
                 userimage = request.FILES['user-img-change']
                 res_data['userimg'] = fs.url(userimage)
+                res_data['img_check'] = 1
                 user.image = userimage
                 user.save()
                 return render(request, 'make_success.html', res_data)
             else:  # Room 입장 POST
-                return render(request, 'ssimong.html')
+                if room.mode == "EXAM":
+                    return redirect('/main/enteroom/exam1')
+                elif room.mode == "STUDY":
+                    return redirect('/main/enteroom/study1')
     else:
         return redirect('/login')
 
@@ -165,9 +178,9 @@ def enteroom(request):
         res_data['userimg'] = fs.url(user.image)
 
         if res_data['userimg'] == "/media/":               # 이미지 체크
-            res_data['check'] = 0
+            res_data['img_check'] = 0
         else:
-            res_data['check'] = 1
+            res_data['img_check'] = 1
 
         if request.method == 'GET':
             return render(request, 'enteroom.html', res_data)
@@ -177,6 +190,7 @@ def enteroom(request):
                 # 이미지 변경 저장
                 userimage = request.FILES['user-img-change']
                 res_data['userimg'] = fs.url(userimage)
+                res_data['img_check'] = 1
                 user.image = userimage
                 user.save()
                 return render(request, 'enteroom.html', res_data)
@@ -200,7 +214,10 @@ def enteroom(request):
 
                     db_password = room.room_password
                     if db_password == room_password:     # room 정상 입장
-                        return redirect('/main/enteroom/exam1')
+                        if room.mode == "EXAM":
+                            return redirect('/main/enteroom/exam1')
+                        elif room.mode == "STUDY":
+                            return redirect('/main/enteroom/study1')
                     else:
                         res_data['error'] = '비밀번호가 틀렸습니다.'
                         return render(request, 'enteroom.html', res_data)
@@ -223,17 +240,199 @@ def exam1(request):
         res_data['userimg'] = fs.url(user.image)
 
         if res_data['userimg'] == "/media/":               # 이미지 체크
-            res_data['check'] = 0
+            res_data['img_check'] = 0
         else:
-            res_data['check'] = 1
+            res_data['img_check'] = 1
             
         if request.method == 'GET':
             return render(request,'enter_exam1.html',res_data)
         elif request.method == 'POST':
-            return
+            if user.check== False:
+                return redirect('/main/enteroom/exam2')
+            else:
+                res_data['check'] = "차단이 완료되지 않았습니다."
+                return render(request,'enter_exam1.html',res_data)
     else:
         return redirect('/login')
 
+def exam2(request):
+    res_data={}
+    fs = FileSystemStorage()
+    user_session = request.session.get('user')
+    if user_session:
+        user = User.objects.get(pk=user_session)    # 로그인 체크
+        res_data['username'] = user.username        # mypage 정보
+        res_data['email'] = user.email
+        res_data['register'] = user.registerd_date
+        res_data['userimg'] = fs.url(user.image)
+
+        if res_data['userimg'] == "/media/":               # 이미지 체크
+            res_data['img_check'] = 0
+        else:
+            res_data['img_check'] = 1
+            
+        if request.method == 'GET':
+            return render(request,'enter_exam2.html',res_data)
+        elif request.method == 'POST':
+            return redirect('/main/enteroom/exam3')
+    else:
+        return redirect('/login')
+
+def exam3(request):
+    res_data={}
+    fs = FileSystemStorage()
+    user_session = request.session.get('user')
+    if user_session:
+        user = User.objects.get(pk=user_session)    # 로그인 체크
+        res_data['username'] = user.username        # mypage 정보
+        res_data['email'] = user.email
+        res_data['register'] = user.registerd_date
+        res_data['userimg'] = fs.url(user.image)
+
+        if res_data['userimg'] == "/media/":               # 이미지 체크
+            res_data['img_check'] = 0
+        else:
+            res_data['img_check'] = 1
+            
+        if request.method == 'GET':
+            return render(request,'enter_exam3.html',res_data)
+        elif request.method == 'POST':
+            return  render(request,'ssimong.html',res_data)
+    else:
+        return redirect('/login')
+
+def study1(request):
+    res_data={}
+    fs = FileSystemStorage()
+    user_session = request.session.get('user')
+    if user_session:
+        user = User.objects.get(pk=user_session)    # 로그인 체크
+        res_data['username'] = user.username        # mypage 정보
+        res_data['email'] = user.email
+        res_data['register'] = user.registerd_date
+        res_data['userimg'] = fs.url(user.image)
+
+        if res_data['userimg'] == "/media/":               # 이미지 체크
+            res_data['img_check'] = 0
+        else:
+            res_data['img_check'] = 1
+            
+        if request.method == 'GET':
+            return render(request,'enter_study1.html',res_data)
+        elif request.method == 'POST':
+            if user.check== False:
+                return redirect('/main/enteroom/study2')
+            else:
+                res_data['check'] = "차단이 완료되지 않았습니다."
+                return render(request,'enter_study1.html',res_data)
+    else:
+        return redirect('/login')
+
+def study2(request):
+    res_data={}
+    fs = FileSystemStorage()
+    user_session = request.session.get('user')
+    if user_session:
+        user = User.objects.get(pk=user_session)    # 로그인 체크
+        res_data['username'] = user.username        # mypage 정보
+        res_data['email'] = user.email
+        res_data['register'] = user.registerd_date
+        res_data['userimg'] = fs.url(user.image)
+
+        if res_data['userimg'] == "/media/":               # 이미지 체크
+            res_data['img_check'] = 0
+        else:
+            res_data['img_check'] = 1
+            
+        if request.method == 'GET':
+            return render(request,'enter_study2.html',res_data)
+        elif request.method == 'POST':
+            return  render(request,'ssimong.html',res_data)
+    else:
+        return redirect('/login')
+
+def list(request):
+    res_data={}
+    fs = FileSystemStorage()
+    user_session = request.session.get('user')
+    if user_session:
+        user = User.objects.get(pk=user_session)    # 로그인 체크
+        res_data['username'] = user.username        # mypage 정보
+        res_data['email'] = user.email
+        res_data['register'] = user.registerd_date
+        res_data['userimg'] = fs.url(user.image)
+
+        
+        if res_data['userimg'] == "/media/":               # 이미지 체크
+            res_data['img_check'] = 0
+        else:
+            res_data['img_check'] = 1
+
+        if request.method == 'GET':
+            return render(request,'list.html',res_data)
+        elif request.method == 'POST':
+            return  render(request,'list,html',res_data)
+    else:
+        return redirect('/login')
+
+class RoomList(ListView):
+    model = Room
+    template_name = 'roomlist.html'
+    # def get_queryset(self, **kwargs):
+    #     QuerySet = Room.objects.filter(maker=self.request.session.get('user_email'))
+    #     return QuerySet
+
+def room(request):
+    res_data={}
+    fs = FileSystemStorage()
+    user_session = request.session.get('user')
+    if user_session:
+        user = User.objects.get(pk=user_session)    # 로그인 체크
+        res_data['username'] = user.username        # mypage 정보
+        res_data['email'] = user.email
+        res_data['register'] = user.registerd_date
+        res_data['userimg'] = fs.url(user.image)
+
+        if res_data['userimg'] == "/media/":               # 이미지 체크
+            res_data['img_check'] = 0
+        else:
+            res_data['img_check'] = 1
+
+        
+        room = Room.objects.get(maker=user.email).first()
+        room_num = Room.objects.filter(maker=user.email).count()
+        print("!!!!!!!!!!!!!!!!!!!!!!!",room)
+        res_data['room'] = room 
+        res_data['room_num'] = room_num    
+        if request.method == 'GET':
+            return render(request,'roomlist.html',res_data)
+        elif request.method == 'POST':
+            return  render(request,'roomlist,html',res_data)
+    else:
+        return redirect('/login')
+
+def analytics(request):
+    res_data={}
+    fs = FileSystemStorage()
+    user_session = request.session.get('user')
+    if user_session:
+        user = User.objects.get(pk=user_session)    # 로그인 체크
+        res_data['username'] = user.username        # mypage 정보
+        res_data['email'] = user.email
+        res_data['register'] = user.registerd_date
+        res_data['userimg'] = fs.url(user.image)
+
+        if res_data['userimg'] == "/media/":               # 이미지 체크
+            res_data['img_check'] = 0
+        else:
+            res_data['img_check'] = 1
+            
+        if request.method == 'GET':
+            return render(request,'analyticslist.html',res_data)
+        elif request.method == 'POST':
+            return  render(request,'analyticslist.html',res_data)
+    else:
+        return redirect('/login')
 
 
 

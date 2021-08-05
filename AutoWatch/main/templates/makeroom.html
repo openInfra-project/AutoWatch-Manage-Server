@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="/static/assets/css/main.css">
     <link rel="stylesheet" href="/static/assets/css/makeroom.css">
     <link rel="stylesheet" href="/static/assets/css/animated.css">
+    <link rel="stylesheet" href="/static/assets/css/list.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link rel="stylesheet" href="/static/assets/css/owl.css">
 </head>
@@ -32,7 +33,7 @@
                   <!-- ***** Menu Start ***** -->
                   <ul class="nav">
                     <li class="scroll-to-section"><a id="nav_mypage" name="nav_mypage">My page</a></li>
-                    <li class="scroll-to-section"><a href="#services">History</a></li>
+                    <li class="scroll-to-section"><a href="/main/list">My List</a></li>
                     <li class="scroll-to-section"><a href="/logout">Logout</a></li>
                     <li class="scroll-to-section"><div class="main-blue-button"><a id="nav_mypage2" name="nav_mypage2">{{username}}님 안녕하세요.</a></div></li>
                   </ul>
@@ -52,7 +53,7 @@
         <div class="makeroom">
             <img src="/static/assets/images/previous.png" alt="" class="back" onclick="location.href='/main'">
             <span class="animate__animated animate__rubberBand" id="main-text">Make Your Room!</span>
-            <form method="POST" id="makeroom" name="makeroom">
+            <form method="POST" id="makeroom" name="makeroom"  enctype="multipart/form-data">
               {% csrf_token %}
                     <!-- 크로스 도메인을 막기 위해 사용하느 코드 -->
                     <div class="make-input">
@@ -100,7 +101,7 @@
     <div class="mypage-inner">
       <img src="/static/assets/images/cancel.png" alt="" class="cancel" id="cancel" name="cancel">
       <span class="my_text">My Page</span>
-      {% if check == 0 %}  <!-- 이미지 널 값 -->
+      {% if img_check == 0 %}  <!-- 이미지 널 값 -->
         <img src="/static/assets/images/face-recognition.png" alt="" id="user-img">
       {% else %}
         <img src="{{userimg}}" alt="" id="user-img">

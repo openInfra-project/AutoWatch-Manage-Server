@@ -1,0 +1,22 @@
+{%extends 'base.html'%}
+{% block content%}
+<div class="wapper">
+    <div class="list" onclick="location.href='/main/list/room'">
+        <div>
+            <img src="/static/assets/images/door.png" alt="">
+        </div>
+        <div>
+            <span>Room List</span>
+        </div>
+    </div>
+    <div class="list" onclick="location.href='/main/list/analytics'">
+        <div>
+            <img src="/static/assets/images/analytics.png" alt="">
+        </div>
+        <div>
+            <span>Analytics List</span>
+        </div>
+    
+    </div>
+</div>
+{% endblock%}
