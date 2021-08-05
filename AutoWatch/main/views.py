@@ -190,11 +190,36 @@ def enteroom(request):
 
                     db_password = room.room_password
                     if db_password == room_password:     # room 정상 입장
-                        return render(request, 'ssimong.html')
+                        return redirect('/main/enteroom/exam1')
                     else:
                         res_data['error'] = '비밀번호가 틀렸습니다.'
                         return render(request, 'enteroom.html',res_data)
                 return render(request,'enteroom.html',res_data)  # room 정보 비정상 일시
+    else:
+        return redirect('/login')
+
+
+
+def exam1(request):
+    res_data={}
+    fs = FileSystemStorage()
+    user_session = request.session.get('user')
+    if user_session:
+        user = User.objects.get(pk=user_session)    # 로그인 체크
+        res_data['username'] = user.username        # mypage 정보
+        res_data['email'] = user.email
+        res_data['register'] = user.registerd_date
+        res_data['userimg'] = fs.url(user.image)
+
+        if res_data['userimg'] == "/media/":               # 이미지 체크
+            res_data['check'] = 0
+        else:
+            res_data['check'] = 1
+            
+        if request.method == 'GET':
+            return render(request,'enter_exam1.html',res_data)
+        elif request.method == 'POST':
+            return
     else:
         return redirect('/login')
 
