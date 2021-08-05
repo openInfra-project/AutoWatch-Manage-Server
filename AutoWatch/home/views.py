@@ -62,6 +62,7 @@ def login(request):
             user_password = user.password
             if check_password(password, user_password):
                 request.session['user'] = user.id  # session 변수에 저장
+                request.session['user_email'] = user.email  # session 변수에 저장
                 return redirect('/main')
             else:
                 res_data['error'] = '비밀번호가 틀렸습니다.'

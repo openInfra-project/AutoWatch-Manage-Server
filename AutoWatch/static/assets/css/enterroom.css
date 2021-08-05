@@ -90,14 +90,40 @@
     #enter1-text{
         font-size: 30px;
         color: #33ccc5;
-        font-weight: 700;
+        font-weight: 600;
         display: flex;
         justify-content: center;
-        margin-bottom: 20px;
+        margin-bottom: 5px;
     }
     .enter_exam1 img{
         width: 83px;
         height: 83px;
+    }
+    .down-arrow img{
+        width: 12px;
+        height: 17px;
+        margin-left: 255px;
+    }
+    .down-arrow2 img{
+        width: 12px;
+        height: 17px;
+        margin-left: 465px;
+    }
+    .down-arrow3 img{
+        width: 12px;
+        height: 17px;
+        margin-left: 685px;
+    }
+
+    .down-arrow4 img{
+        width: 12px;
+        height: 17px;
+        margin-left: 360px;
+    }
+    .down-arrow5 img{
+        width: 12px;
+        height: 17px;
+        margin-left: 580px;
     }
     .border{
         /* border-bottom: 1px solid black; */
@@ -107,18 +133,18 @@
         margin: 0 20px 0 20px;
     }
     .progress-icon{
-        margin-top: 40px;
+        margin-top: 5px;
         text-align: center;
     }
 
     .enter_exam1 .explain{
-        font-size: 25px;
+        font-size: 26px;
         font-weight: 700;
         text-align: center;
         margin-top: 100px;
     }
     .form-next{
-        margin-top: 80px;
+        margin-top: 50px;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -142,8 +168,19 @@
         transition: all .3s;
     }
 
+    .check{
+        color: red;
+        opacity: 0.7;
+    }
+    #check{
+        text-align: center;
+        margin-top: 20px;
+    }
+
     .enter_exam1 .next:hover{
         background-color: #33ccc5;
         border-bottom: 3px solid #4771cb!important;
+        transform: scale(1.2);
     }
+
     /* enter_exam1 END */

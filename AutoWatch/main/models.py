@@ -7,6 +7,7 @@ class Room(models.Model):
     file = models.FileField(upload_to="room", verbose_name="파일", default="NULL")
     mode = models.CharField(max_length=64, verbose_name="모드", default="NULL")
     maker = models.EmailField(max_length=64, verbose_name="생성자", default="NULL")
+    make_date = models.DateTimeField(auto_now_add=True, verbose_name='등록시간')
 
     def __str__(self):
         return self.room_name

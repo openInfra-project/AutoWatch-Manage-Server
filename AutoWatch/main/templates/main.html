@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="/static/assets/css/templatemo-seo-dream.css">
     <link rel="stylesheet" href="/static/assets/css/main.css?after">
     <link rel="stylesheet" href="/static/assets/css/makeroom.css?after">
+    <link rel="stylesheet" href="/static/assets/css/list.css">
     <link rel="stylesheet" href="/static/assets/css/animated.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link rel="stylesheet" href="/static/assets/css/owl.css">
@@ -32,7 +33,7 @@
                     <!-- ***** Menu Start ***** -->
                     <ul class="nav">
                       <li class="scroll-to-section"><a id="nav_mypage" name="nav_mypage">My page</a></li>
-                      <li class="scroll-to-section"><a href="#services">History</a></li>
+                      <li class="scroll-to-section"><a href="/main/list">My List</a></li>
                       <li class="scroll-to-section"><a href="/logout">Logout</a></li>
                       <li class="scroll-to-section"><div class="main-blue-button"><a id="nav_mypage2" name="nav_mypage2">{{username}}님 안녕하세요.</a></div></li>
                     </ul>
@@ -64,7 +65,7 @@
         <div class="mypage-inner">
           <img src="/static/assets/images/cancel.png" alt="" class="cancel" id="cancel" name="cancel">
           <span class="my_text">My Page</span>
-          {% if check == 0 %}
+          {% if img_check == 0 %}
             <img src="/static/assets/images/face-recognition.png" alt="" id="user-img">
           {% else %}
             <img src="{{userimg}}" alt="" id="user-img">
@@ -82,7 +83,7 @@
             {% csrf_token %}
             <label for="user-img-change" class="user-img-change">이미지 설정하기</label>
             <input type="file" id="user-img-change" name="user-img-change" accept=".png, .jpeg, .jpg">
-            <button class="user-img-btn" id="user-img-btn" name="user-img-btn">변경하기</button>
+            <button class="user-img-btn" id="user-img-btn" name="user-img-btn" value="모달">변경하기</button>
           </form>
         </div>
     </div>
