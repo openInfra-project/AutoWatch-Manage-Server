@@ -27,13 +27,14 @@ def home(request):
             try:
                 user = User.objects.get(email=email)    # 아이디가 있는지 확인 해보고
             except User.DoesNotExist:                   # 아이디가 없어서 DoesNotExist이면 저장한다.
-                user = User(email=email, username=username, password=make_password(password))
+                user = User(email=email, username=username,
+                            password=make_password(password))
                 user.save()
                 return redirect('/login')
             if(user):
                 res_data['error'] = '존재하는 Email 입니다.'
                 return render(request, 'home.html', res_data)
-                
+
 
 # 로그인
 
@@ -123,7 +124,6 @@ def app_login(request):
 def app_delete(request):
     if request.method == "POST":
         email = request.POST.get('email', None)
-        password = request.POST.get('password', None)
         mydelete = User.objects.get(email=email)
         mydelete.delete()
         return HttpResponse(200)
@@ -170,3 +170,28 @@ def app_mypage(request):
         print(image)
 
         return HttpResponse(simplejson.dumps({"email": email, "image": image, "name": name}))
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+def app_check(request):
+    if request.method == "POST":
+        email = request.POST.get('email', None)
+        print(email)
+        myuser = User.objects.get(email=email)
+        myuser.check = True
+        myuser.save()
+
+        return HttpResponse(simplejson.dumps({"roomname": "yes"}))
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+def app_sendcount(request):
+    if request.method == "POST":
+        email = request.POST.get('email', None)
+        count = request.POST.get('count', None)
+        print(count)
+        myuser = User.objects.get(email=email)
+        myuser.check = False
+        myuser.save()
+
+        return HttpResponse(simplejson.dumps({"roomname": "yes"}))
