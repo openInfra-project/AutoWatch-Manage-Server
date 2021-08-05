@@ -15,6 +15,9 @@ urlpatterns = [
     path('app_image', views.app_image),
     path('app_delete', views.app_delete),
     path('app_mypage', views.app_mypage),
-    path('app_modify', views.app_modify)
+    path('app_modify', views.app_modify),
+    path('app_check', views.app_check),
+    path('app_sendcount', views.app_sendcount)
+
 
 ]
