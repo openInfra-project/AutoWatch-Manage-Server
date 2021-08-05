@@ -124,7 +124,6 @@ def app_login(request):
 def app_delete(request):
     if request.method == "POST":
         email = request.POST.get('email', None)
-        password = request.POST.get('password', None)
         mydelete = User.objects.get(email=email)
         mydelete.delete()
         return HttpResponse(200)
