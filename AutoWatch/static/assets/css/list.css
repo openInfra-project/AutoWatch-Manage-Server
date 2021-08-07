@@ -31,5 +31,54 @@
     height: 100%;
 }
 
+.room-list{
+    border-bottom: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+.room-list img{
+    width: 74px;
+    height: 74px;
+}
+.list-sub-text{
+    font-size: large;
+    color: #868e96;
+    font-weight: 700;
+    margin-left: 30px;
+}
+.list-main-text{
+    font-size: 23px;
+    color: #212529;
+    font-weight: 650;
+    margin-left: 5px;
+}
+.over{
+    margin-left: 10px;
+}
+.under{
+    margin-left: 50px;
+}
+
+
+
+
+#noroom{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 35px;
+    color: #33ccc5;
+    font-weight: 700;
+    text-align: center;
+}
+.noroom img{
+    margin-left: 10px;
+    width: 58px;
+    height: 58px;
+}
 
 /* 룸list END */

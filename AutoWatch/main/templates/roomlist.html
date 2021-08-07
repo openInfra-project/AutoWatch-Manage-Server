@@ -1,8 +1,81 @@
-{%extends 'base.html'%}
-{% block content%}
-<div class="list-wapper">
-    <div class="room-list">
-        {{object_list}}
+<!DOCTYPE html>
+<html lang="ko" id="html">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoWatch</title>
+    <link href="/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Additional CSS Files -->
+    <link rel="stylesheet" href="/static/assets/css/fontawesome.css">
+    <link rel="stylesheet" href="/static/assets/css/templatemo-seo-dream.css?after">
+    <link rel="stylesheet" href="/static/assets/css/main.css">
+    <link rel="stylesheet" href="/static/assets/css/makeroom.css">
+    <link rel="stylesheet" href="/static/assets/css/enterroom.css?after">
+    <link rel="stylesheet" href="/static/assets/css/list.css?after">
+    <link rel="stylesheet" href="/static/assets/css/animated.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="/static/assets/css/owl.css">
+</head>
+<body>
+    <!-- ***** Header Area Start ***** -->
+    <div class="animate__animated animate__fadeInDown animate__delay-0.8s">
+      <header class="header-area">
+        <div class="container">
+          <div class="row">
+            <div class="col-12">
+                <nav class="main-nav">
+                  <!-- ***** Logo Start ***** -->
+                  <a href="/main" class="logo">
+                    <h4>Auto Watch <img src="/static/assets/images/자동감시로고_-removebg-preview.png" alt="" class="auto_logo"></h4>
+                  </a>
+                  <!-- ***** Logo End ***** -->
+                  <!-- ***** Menu Start ***** -->
+                  <ul class="nav">
+                    <li class="scroll-to-section"><a href="/main">Home</a></li>
+                    <li class="scroll-to-section"><a href="/main/list">My List</a></li>
+                    <li class="scroll-to-section"><a href="/logout">Logout</a></li>
+                    <li class="scroll-to-section"></li>
+                  </ul>
+                  <a class='menu-trigger'>
+                      <span>Menu</span>
+                  </a>
+                  <!-- ***** Menu End ***** -->
+                </nav>
+            </div>
+          </div>
+        </div>
+      </header>
     </div>
-</div>
-{% endblock%}
+    <!-- ***** Header Area End ***** -->
+    <div class="main">
+      <div class="inner">
+        <div class="list-wapper">
+            {% if object_list %}
+                {% for Room in object_list %}
+                    {% if Room.mode == 'STUDY' %}
+                        <div class="room-list">
+                            <img src="/static/assets/images/studying.png" alt="">
+                            <div class="over"><span class="list-sub-text">Name: </span><span class="list-main-text">{{Room.room_name}}</span><br><span class="list-sub-text">Password: </span><span class="list-main-text">{{Room.room_password}}</span></div>
+                            <div class="under"><span class="list-sub-text">Mode: </span><span class="list-main-text">{{Room.mode}}</span><br><span class="list-sub-text">Date: </span><span class="list-main-text">{{Room.make_date}}</span></div>
+                        </div>
+                    {% elif Room.mode == 'EXAM' %}
+                        <div class="room-list">
+                            <img src="/static/assets/images/exam.png" alt="">
+                            <div class="over"><span class="list-sub-text">Name: </span><span class="list-main-text">{{Room.room_name}}</span><br><span class="list-sub-text">Password: </span><span class="list-main-text">{{Room.room_password}}</span></div>
+                            <div class="under"><span class="list-sub-text">Mode: </span><span class="list-main-text">{{Room.mode}}</span><br><span class="list-sub-text">Date: </span><span class="list-main-text">{{Room.make_date}}</span></div>
+                        </div>
+                    {%endif%}
+                {% endfor%}
+            {% else %}
+                <div id="noroom" class="animate__animated animate__rubberBand animate__delay-0.8s">
+                    <span>생성한 방이 없습니다!</span>
+                    <img src="/static/assets/images/embarrassed.png" alt="">
+                </div>
+            {%endif%}
+        </div>
+      </div> 
+    </div>
+
+</body>
+</html>

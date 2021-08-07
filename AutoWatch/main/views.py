@@ -375,12 +375,6 @@ def list(request):
     else:
         return redirect('/login')
 
-class RoomList(ListView):
-    model = Room
-    template_name = 'roomlist.html'
-    # def get_queryset(self, **kwargs):
-    #     QuerySet = Room.objects.filter(maker=self.request.session.get('user_email'))
-    #     return QuerySet
 
 def room(request):
     res_data={}
@@ -398,18 +392,25 @@ def room(request):
         else:
             res_data['img_check'] = 1
 
-        
-        room = Room.objects.get(maker=user.email).first()
-        room_num = Room.objects.filter(maker=user.email).count()
-        print("!!!!!!!!!!!!!!!!!!!!!!!",room)
-        res_data['room'] = room 
-        res_data['room_num'] = room_num    
         if request.method == 'GET':
             return render(request,'roomlist.html',res_data)
         elif request.method == 'POST':
             return  render(request,'roomlist,html',res_data)
     else:
         return redirect('/login')
+        
+class RoomList(ListView):
+    model = Room
+    template_name = 'roomlist.html'
+
+    
+    def get_queryset(self):    # roomlist를 보여줄 queryset 특정
+        # session에 저장되어 있는 email과 room의 maker가 같은 것만 queryset에 넣음
+        QuerySet = Room.objects.filter(maker = self.request.session.get('user_email')) 
+        user = User.objects.get(pk= self.request.session.get('user'))                  
+        res_data = {}
+        res_data['username']= user.username   # 얘랑 같이 반환 하니까 안됨!!!! 주의   
+        return QuerySet
 
 def analytics(request):
     res_data={}
