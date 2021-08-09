@@ -16,3 +16,16 @@ class Room(models.Model):
         db_table = 'room'
         verbose_name = 'Room 명단'
         verbose_name_plural = 'Room 명단'
+
+class Analytics(models.Model):
+    email = models.EmailField(max_length=128, verbose_name="아이디",default="NULL")
+    app = models.IntegerField(verbose_name="앱 차단 점수")
+    person = models.IntegerField(verbose_name="자리 이탈 점수")
+
+    def __str__(self):
+        return self.email
+
+    class Meta:
+        db_table = 'analytics'
+        verbose_name = '집중도'
+        verbose_name_plural = '집중도'

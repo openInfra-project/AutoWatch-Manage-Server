@@ -2,16 +2,20 @@ from django.db.models.fields import NullBooleanField
 from django.db.models.query import QuerySet
 from django.http import response
 from django.shortcuts import redirect, render
+from django.urls.conf import path
 from home.models import User
-from .models import Room
+from .models import Analytics, Room
 import string, random
 from django.views.generic import ListView
+from collections import OrderedDict
+from .fusioncharts import FusionCharts
+import base64
 
 import simplejson
 from django.core.files.storage import FileSystemStorage
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse, JsonResponse
 from django.core import serializers
 
 
@@ -123,8 +127,7 @@ def makeroom(request):
 def make_success(request):
     res_data = {}
     fs = FileSystemStorage()
-    room_session = request.session.get(
-        'room_name')   # 아까 POST 할때 session에 저장한 값 불러옴
+    room_session = request.session.get('room_name')   # 아까 POST 할때 session에 저장한 값 불러옴
     user_session = request.session.get('user')
     if room_session and user_session:
         user = User.objects.get(pk=user_session)    # 로그인 체크
@@ -197,6 +200,8 @@ def enteroom(request):
             else:  # Room 입장 POST
                 room_name = request.POST.get('room_name')
                 room_password = request.POST.get('room_password')
+
+                request.session['room_name'] = room_name   # 방 입장하는 순간 room session의 기준은 입장한 방 이름
                 if not(room_name):
                     res_data['name_error'] = 'Room 이름을 입력하세요.'
                 elif not(room_password):
@@ -328,6 +333,7 @@ def study1(request):
     else:
         return redirect('/login')
 
+@csrf_exempt
 def study2(request):
     res_data={}
     fs = FileSystemStorage()
@@ -347,7 +353,21 @@ def study2(request):
         if request.method == 'GET':
             return render(request,'enter_study2.html',res_data)
         elif request.method == 'POST':
-            return  render(request,'ssimong.html',res_data)
+            post_type = request.POST.get('enterRoom')
+            if post_type == 'toSsimong':   # 준영으로 넘어가는 나의 POST
+                return  render(request,'ssimong.html',res_data)
+            else:   #  준영이 나에게 요청하는 POST
+
+                # 준영에게 넘겨줄 data
+                room_session = request.session.get('room_name')
+                room = Room.objects.get(room_name=room_session)
+                room_data = {}
+                room_data['roomname'] = room.room_name
+                room_data['useremail'] = user.email
+                room_data['nickname'] = user.username
+                room_data['roomowner'] = room.maker
+                room_data['roomtype'] = room.mode
+                return HttpResponse(simplejson.dumps(room_data))
     else:
         return redirect('/login')
 
@@ -376,41 +396,51 @@ def list(request):
         return redirect('/login')
 
 
-def room(request):
-    res_data={}
-    fs = FileSystemStorage()
-    user_session = request.session.get('user')
-    if user_session:
-        user = User.objects.get(pk=user_session)    # 로그인 체크
-        res_data['username'] = user.username        # mypage 정보
-        res_data['email'] = user.email
-        res_data['register'] = user.registerd_date
-        res_data['userimg'] = fs.url(user.image)
+# def room(request):
+#     res_data={}
+#     fs = FileSystemStorage()
+#     user_session = request.session.get('user')
+#     if user_session:
+#         user = User.objects.get(pk=user_session)    # 로그인 체크
+#         res_data['username'] = user.username        # mypage 정보
+#         res_data['email'] = user.email
+#         res_data['register'] = user.registerd_date
+#         res_data['userimg'] = fs.url(user.image)
 
-        if res_data['userimg'] == "/media/":               # 이미지 체크
-            res_data['img_check'] = 0
-        else:
-            res_data['img_check'] = 1
+#         if res_data['userimg'] == "/media/":               # 이미지 체크
+#             res_data['img_check'] = 0
+#         else:
+#             res_data['img_check'] = 1
 
-        if request.method == 'GET':
-            return render(request,'roomlist.html',res_data)
-        elif request.method == 'POST':
-            return  render(request,'roomlist,html',res_data)
-    else:
-        return redirect('/login')
+#         if request.method == 'GET':
+#             return render(request,'roomlist.html',res_data)
+#         elif request.method == 'POST':
+#             return  render(request,'roomlist,html',res_data)
+#     else:
+#         return redirect('/login')
         
 class RoomList(ListView):
     model = Room
     template_name = 'roomlist.html'
-
-    
+    # context_object_name = "test"
     def get_queryset(self):    # roomlist를 보여줄 queryset 특정
         # session에 저장되어 있는 email과 room의 maker가 같은 것만 queryset에 넣음
         QuerySet = Room.objects.filter(maker = self.request.session.get('user_email')) 
-        user = User.objects.get(pk= self.request.session.get('user'))                  
-        res_data = {}
-        res_data['username']= user.username   # 얘랑 같이 반환 하니까 안됨!!!! 주의   
         return QuerySet
+
+    # def get_context_data(self):
+    #     user = User.objects.get(pk= self.request.session.get('user'))                  
+    #     res_data = {}
+    #     res_data['username']= user.username
+    #     return res_data
+
+class AnalyticsList(ListView):
+    model = Analytics
+    template_name = 'analyticslist.html'
+    def get_queryset(self):   
+        QuerySet = Analytics.objects.filter(email = self.request.session.get('user_email')) 
+        return QuerySet
+
 
 def analytics(request):
     res_data={}
@@ -429,15 +459,90 @@ def analytics(request):
             res_data['img_check'] = 1
             
         if request.method == 'GET':
+            # analytics = Analytics.objects.get(email=user.email)  #!!!!!!!!!!!!!!!!!!!!!!!!!!나중에 제일 최근애를 가져오는 get함수로 바꿔야함
+             #chartdata 선언
+            analytics = Analytics.objects.all()
+            
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!",analytics)
+            dataSource = OrderedDict()
+            dataSource["data"] = [] #chartdata는 json형식이다.
+            dataSource["data"].append({"label": '앱 차단', "value": analytics.app})
+            dataSource["data"].append({"label": '자리이탈', "value": analytics.person})
+
+            chartConfig = OrderedDict()
+            chartConfig["caption"] = "집중도 level 3"                #!!!!!!!!!!!!!!!!!!집중도 레벨 판별 해야함
+            chartConfig["subCaption"] = "집중도 통계"
+            chartConfig["xAxisName"] = "목록"
+            chartConfig["yAxisName"] = "수치"
+            chartConfig["numberSuffix"] = "" #y축 숫자단위
+            chartConfig["theme"] = "fusion" #테마
+
+            dataSource["chart"] = chartConfig # 그래프 특징 설정
+
+            column2D = FusionCharts("column2d", "myFirstChart", "450", "350", "chart-1", "json", dataSource)
+            res_data['output'] = column2D.render()
+
             return render(request,'analyticslist.html',res_data)
         elif request.method == 'POST':
+
             return  render(request,'analyticslist.html',res_data)
     else:
         return redirect('/login')
 
 
+import os
+from AutoWatch import settings
+@csrf_exempt
+def saveImages(request):
+    data = request.POST.get('data')
+    # data = data[22:]
+    number = random.randrange(1,10000)
+
+    path = str(os.path.join(settings.STATIC_ROOT,'resultImg/'))
+    filename ='image'+str(number) + '.png'
+
+    image = open(path+filename,"wb")
+    image.write(base64.b64decode(data))
+    image.close()
+
+    res_data ={}
+    res_data['filename'] = filename
+    return JsonResponse(res_data)
 
 
+
+def roomout(request):
+    res_data={}
+    fs = FileSystemStorage()
+    user_session = request.session.get('user')
+    if user_session:
+        user = User.objects.get(pk=user_session)    # 로그인 체크
+        res_data['username'] = user.username        # mypage 정보
+        res_data['email'] = user.email
+        res_data['register'] = user.registerd_date
+        res_data['userimg'] = fs.url(user.image)
+
+        
+        if res_data['userimg'] == "/media/":               # 이미지 체크
+            res_data['img_check'] = 0
+        else:
+            res_data['img_check'] = 1
+
+        if request.method == 'GET':
+            return render(request,'roomout.html',res_data)
+        elif request.method == 'POST':
+            if user.check== False:
+                return redirect('/main/roomout/analytics')
+            else:
+                res_data['check'] = "차단이 완료되지 않았습니다."
+                return render(request,'roomout.html',res_data)
+    else:
+        return redirect('/login')
+
+
+# web END
+
+# android START
 
 # 앱 이름 비번 명단 모두 제출시
 @method_decorator(csrf_exempt, name='dispatch')

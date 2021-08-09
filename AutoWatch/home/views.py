@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
 # 회원가입
-
+global count
 
 def home(request):
     res_data = {}

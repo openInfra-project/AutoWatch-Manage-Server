@@ -1,0 +1,13 @@
+{%extends 'base.html'%}
+{% block content%}
+<div class="animate__animated animate__shakeX animate__delay-1s" id="check">
+    <span class="check">{{check}}</span>
+</div>
+<form method="POST"> 
+    {% csrf_token %}      
+    AutoWatch App에서 방을 나가 주세요.
+    <div class="enter-div">
+        <button class="enter">확인</button>
+    </div>
+</form>
+{% endblock%}

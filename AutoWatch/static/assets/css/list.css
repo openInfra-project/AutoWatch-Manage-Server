@@ -75,10 +75,15 @@
     font-weight: 700;
     text-align: center;
 }
-.noroom img{
+#noroom img{
     margin-left: 10px;
     width: 58px;
     height: 58px;
 }
 
 /* 룸list END */
+
+.analytics{
+    width: 450px;
+    height: 350px;
+}
