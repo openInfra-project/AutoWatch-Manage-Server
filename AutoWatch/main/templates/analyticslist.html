@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="/static/assets/css/main.css">
     <link rel="stylesheet" href="/static/assets/css/makeroom.css">
     <link rel="stylesheet" href="/static/assets/css/enterroom.css?after">
-    <link rel="stylesheet" href="/static/assets/css/list.css?after?after">
+    <link rel="stylesheet" href="/static/assets/css/list.css?after?after?after?after">
     <link rel="stylesheet" href="/static/assets/css/animated.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link rel="stylesheet" href="/static/assets/css/owl.css">
@@ -53,59 +53,36 @@
     <div class="main">
       <div class="inner">
         <div class="list-wapper" id="list-wapper" name="list-wapper" >
-            <div class="analytics" id="analytics" name="analytics">
-                <h3>{{ chartTitle|safe }}</h3>
-                <div id="chart-1">{{ output|safe }}</div>
-                <div id="chart-2">{{ output_2|safe }}</div>
-            </div>
-            <button onclick="partShot()">저장하기</button>
-            <button onclick="toView()">닫기</button>
+          {% if object_list %}
+            {% for Analytics in object_list %}
+              {% if Analytics.app > 90 and Analytics.person > 90 and Analytics.time > 60 %}
+                <div class="analytics-list">
+                  <img src="/static/assets/images/gold-medal.png" alt="">
+                  <div class="over"><span class="list-sub-text-anal">앱 차단: </span><span class="list-main-text">{{Analytics.app}}점</span><br><span class="list-sub-text">자리 이탈: </span><span class="list-main-text">{{Analytics.person}}점</span></div>
+                  <div class="under"><span class="list-sub-text">학습 시간: </span><span class="list-main-text">{{Analytics.time}}분</span><br><span class="list-sub-text">날짜: </span><span class="list-main-text-date">{{Analytics.make_date}}</span></div>
+                  <button onclick="location.href='/main/list/analytics/{{Analytics.pk}}'">그래프 보기</button>
+                </div>
+              {% elif Analytics.app > 80 and Analytics.person > 80 and Analytics.time > 50 %}
+                <div class="analytics-list">
+                  <img src="/static/assets/images/silver-medal.png" alt="">
+                  <div class="over"><span class="list-sub-text-anal">앱 차단: </span><span class="list-main-text">{{Analytics.app}}점</span><br><span class="list-sub-text">자리 이탈: </span><span class="list-main-text">{{Analytics.person}}점</span></div>
+                  <div class="under"><span class="list-sub-text">학습 시간: </span><span class="list-main-text">{{Analytics.time}}분</span><br><span class="list-sub-text">날짜: </span><span class="list-main-text-date">{{Analytics.make_date}}</span></div>
+                  <button onclick="location.href='/main/list/analytics/{{Analytics.pk}}'">그래프 보기</button>
+                </div>
+              {% elif Analytics.app > 70 and Analytics.person > 70 and Analytics.time > 40 %}
+                <div class="analytics-list">
+                  <img src="/static/assets/images/bronze-medal.png" alt="">
+                  <div class="over"><span class="list-sub-text-anal">앱 차단: </span><span class="list-main-text">{{Analytics.app}}점</span><br><span class="list-sub-text">자리 이탈: </span><span class="list-main-text">{{Analytics.person}}점</span></div>
+                  <div class="under"><span class="list-sub-text">학습 시간: </span><span class="list-main-text">{{Analytics.time}}분</span><br><span class="list-sub-text">날짜: </span><span class="list-main-text-date">{{Analytics.make_date}}</span></div>
+                  <button onclick="location.href='/main/list/analytics/{{Analytics.pk}}'">그래프 보기</button>
+                </div>
+              {%endif%}
+            {% endfor%}
+          {%endif%}
         </div>
     
       </div> 
     </div>
 
-    <script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.js"></script>
-    <script>
-        function partShot() {
-            //특정부분 스크린샷
-            let image = html2canvas(document.getElementById('analytics'))
-            image.then(function(canvas){
-                let data = canvas.toDataURL('/list/image');
-                console.log(data)
-
-                $.ajax({
-                    type: 'POST',
-                    url: '/main/saveImages',   // 현재 이 html파일의 경로가 기본 경로로 더해짐 지금은 /main/list/saveImage/
-                    data: {data:data},
-                    success: function(result){
-                        let filename = result['filename'];
-                        sendLinkakao(filename);
-                    },
-                    error: function(e) {alert("에러발생")}
-                });
-
-            });
-           
-        }
-        
-
-
-
-        function saveAs(uri, filename) {
-            var link = document.createElement('a');
-            if (typeof link.download === 'string') {
-            link.href = uri;
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            } else {
-            window.open(uri);
-            }
-        }
-
-    </script>
 </body>
 </html>
