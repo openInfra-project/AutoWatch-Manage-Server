@@ -86,7 +86,7 @@ def makeroom(request):
                 study = request.POST.getlist('study')
                 exam = request.POST.getlist('exam')
                 maker = user.email
-                print("!!!!!!!!!!!!!!!!!1",exam,study)
+        
                 if exam and not(study):
                     file = request.FILES['file']
                 elif study and not(exam):
