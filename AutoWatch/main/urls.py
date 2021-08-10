@@ -9,7 +9,7 @@ urlpatterns = [
     path('enteroom/', views.enteroom),
     path('makeroom/success', views.make_success),
     path('enteroom/exam1',views.exam1),
-    path('enteroom/exam2',views.exam2),
+    path('enteroom/exam2',views.exam2, name='exam2'),
     path('enteroom/exam3',views.exam3),
     path('enteroom/study1',views.study1),
     path('enteroom/study2',views.study2),

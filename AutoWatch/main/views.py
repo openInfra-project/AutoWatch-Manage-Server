@@ -18,6 +18,12 @@ from django.utils.decorators import method_decorator
 from django.http.response import HttpResponse, JsonResponse
 from django.core import serializers
 
+import os
+import base64
+from luxand import luxand
+from openpyxl import load_workbook
+from openpyxl_image_loader import SheetImageLoader
+
 
 
 def main(request):
@@ -260,6 +266,7 @@ def exam1(request):
     else:
         return redirect('/login')
 
+@csrf_exempt
 def exam2(request):
     res_data={}
     fs = FileSystemStorage()
@@ -278,7 +285,9 @@ def exam2(request):
             
         if request.method == 'GET':
             return render(request,'enter_exam2.html',res_data)
+
         elif request.method == 'POST':
+
             return redirect('/main/enteroom/exam3')
     else:
         return redirect('/login')
@@ -821,11 +830,6 @@ def app_images(request):
 
 # EXAM방 입장시 학번,이름 매칭확인
 
-import os
-import base64
-from luxand import luxand
-from openpyxl import load_workbook
-from openpyxl_image_loader import SheetImageLoader
 @method_decorator(csrf_exempt, name='dispatch')
 def app_checkmyinfo(request):
     if request.method == "POST":
