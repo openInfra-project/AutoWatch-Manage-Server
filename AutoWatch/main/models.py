@@ -8,7 +8,7 @@ class Room(models.Model):
     mode = models.CharField(max_length=64, verbose_name="모드", default="NULL")
     maker = models.EmailField(max_length=64, verbose_name="생성자", default="NULL")
     make_date = models.DateTimeField(auto_now_add=True, verbose_name='생성 날짜')
-
+    member_list = models.CharField(max_length=64, verbose_name='회원명단리스트',default=None)
     def __str__(self):
         return self.room_name
 

@@ -95,6 +95,19 @@ def makeroom(request):
         
                 if exam and not(study):
                     file = request.FILES['file']
+                    #학생명단 file
+                    #명단에서학번만 추출
+                    member_list=[]
+                    fs = FileSystemStorage()
+                    filename = fs.save(file.name, file)
+                    print(filename)
+
+                    member = load_workbook("media/" + file.name)
+                    for cell in member['Sheet1']['A']:
+                        member_list.append(cell.value)
+                    
+                    os.remove(os.path.join(settings.MEDIA_ROOT, file.name))
+
                 elif study and not(exam):
                     file = "NULL"
                 # makeroom POST 값 저장
@@ -121,7 +134,7 @@ def makeroom(request):
                         elif exam and not(study):
                             mode = 'EXAM'
                         room = Room(room_name=room_name, room_password=room_password,
-                                    file=file, mode=mode, maker=maker)  # db에 room 정보 저장
+                                    file=file, mode=mode, maker=maker, member_list = member_list)  # db에 room 정보 저장
                         room.save()
                         return redirect('/main/makeroom/success')
                 # room 정보 비정상 일시
@@ -284,11 +297,86 @@ def exam2(request):
             res_data['img_check'] = 1
             
         if request.method == 'GET':
+
             return render(request,'enter_exam2.html',res_data)
 
         elif request.method == 'POST':
+            print("POST")
+            info={}
+            room_name=request.session.get('room_name')
+            member_number = request.POST.get('member_number')
+            member_name = request.POST.get('member_name')
+            if (member_number == None):
+                return render(request,'enter_exam2.html',res_data)
+            
+            print("Get All DATA ")
 
-            return redirect('/main/enteroom/exam3')
+            #해당방의 DB속 명단Excel파일 조회
+            room = Room.objects.get(room_name=room_name)
+            member_file=room.file #명단
+            print(member_file)
+
+
+            #DB의 member_list로 회원번호 확인 및 index 추출
+            member_list=room.member_list #회원번호만 적힌 리스트
+            member_list= member_list[1:-1].split(', ')
+            print(member_list)
+
+            # CHECK NUMBER
+            ### Correct NUMBER
+            if (member_number in member_list):
+                member_index=member_list.index(member_number) +1 #index=0은'회원번호(수험번호/학번)'이므로 index로 추출된 수 +1로 쓰면됨!
+                print('member_index:'+str(member_index))
+                member = load_workbook("media/" + str(member_file))
+                sheet = member['Sheet1']
+                member_file_name = sheet['B'+str(member_index)].value 
+                
+                # CHECK NAME
+                ### Wrong NAME
+                if member_file_name != member_name:
+                    info['result'] = "NO_NAME"
+                    print('no_name')
+                ### Correct NAME
+                else:
+                    # WEB : 캡쳐이미지 받기
+                    member_image_data = request.POST.__getitem__('photo')
+                    member_image_data = member_image_data[22:]
+                    member_image_path = str(room_name)+'_'+str(member_number)+'_capture.png'
+                    member_image = open(os.path.join(FileSystemStorage().location)+str("\\capture/")+member_image_path, "wb")
+                    member_image.write(base64.b64decode(member_image_data))
+                    member_image.close()
+
+                    # exel 명단 속 이미지
+                    image_loader = SheetImageLoader(sheet)
+                    image = image_loader.get('C'+str(member_index))
+
+                    member_file_image_path = (room_name+"_"+str(member_number)+".jpg")
+                    image.save("media/capture/"+member_file_image_path)
+                    fs = FileSystemStorage()
+
+                    # Face Recognition
+                    a=(fs.location +str("\capture/")+ member_file_image_path)
+                    b=(fs.location +str("\capture/")+ member_image_path )
+                    # luxand API
+                    luxand_client = luxand("12a42a8efedf4e24b84730ce440e5429")
+                    member_file_image = luxand_client.add_person(str(member_file_name), photos=[a])
+                    result = luxand_client.verify(member_file_image, photo=b)
+                    print(result)
+
+                    # Recognition RESULT
+                    if result['status']=='success':
+                        info['result']="OK"
+                        print("Recognition_SUCCESS")
+                    else:
+                        info['result']="NO_IMAGE_MATCH"
+                        print("Recognition_FAIL")
+            ### Wrong NUMBER
+            else:
+                #명단 속 존재하지 않는 회원번호 (입장불가!)
+                info['result']="NO_MEMBER"
+                print('no_member')
+                #해당페이지에서 팝업으로 입장불가표시주기
+            return JsonResponse(info)
     else:
         return redirect('/login')
 
@@ -798,7 +886,7 @@ def app_images(request):
 
         # Room DB - excel 파일
         room = Room.objects.get(room_name=room_name)
-        member_file=room.room_member #명단
+        member_file=room.file #명단
         member = load_workbook("media/room/" + str(member_file))
         sheet = member['Sheet1']
 
@@ -840,7 +928,8 @@ def app_checkmyinfo(request):
         member_number  = request.POST.get('number', None)
 
         # room DB-member_list로 회원번호 확인 및 index 추출
-        member_list=room.room_member_list #회원번호만 적힌 리스트
+        room = Room.objects.get(room_name=room_name)
+        member_list=room.member_list #회원번호만 적힌 리스트
         member_list= member_list[1:-1].split(', ')
         print(member_list)
 
@@ -852,7 +941,7 @@ def app_checkmyinfo(request):
             
             #해당방의 DB속 명단Excel파일 조회
             room = Room.objects.get(room_name=room_name)
-            member_file=room.room_member #명단
+            member_file=room.file #명단
 
             member = load_workbook("media/room/" + str(member_file))
             sheet = member['Sheet1']

@@ -1,115 +1,107 @@
 {%extends 'base.html'%}
 {% block content %}
 {% load static %}
-<div class="enter_exam1">
-    <span class="animate__animated animate__rubberBand" id="enter1-text">{{username}}님의 Room으로 입장 준비!</span>
-    <div class="down-arrow2"><img src="/static/assets/images/down-arrow (1).png" alt=""></div>
-    <div class="progress-icon">
-        <img src="/static/assets/images/android (1).png" alt="">
-        <span class="border"></span>
-        <img src="/static/assets/images/face.png" alt="">
-        <span class="border"></span>
-        <img src="/static/assets/images/running.png" alt="">
-    </div>
-    <div class="explain">카메라</div>
-    <div class="animate__animated animate__shakeX animate__delay-1s" id="check">
-        <span class="check">{{check}}</span>
-    </div>
-
-    {% comment %} 혜원 비디오 캡쳐 코드 {% endcomment %}
-    <form method="POST"  action ="{%url 'exam2'%}"   enctype="multipart/form-data" >
-        {% csrf_token %}
-        <div class="field">
-            <label for= "member_number" class="labelid">학번&nbsp / &nbsp 수험번호</label>
-            <input name="member_number" id="member_number"  required >
-            <span class="label">123456789</span>
+<div class="list-wapper"> 
+    <div class="enter_exam1">
+        <span class="animate__animated animate__rubberBand" id="enter1-text">{{username}}님의 Room으로 입장 준비!</span>
+        <div class="down-arrow2"><img src="/static/assets/images/down-arrow (1).png" alt=""></div>
+        <div class="progress-icon">
+            <img src="/static/assets/images/android (1).png" alt="">
+            <span class="border"></span>
+            <img src="/static/assets/images/face.png" alt="">
+            <span class="border"></span>
+            <img src="/static/assets/images/running.png" alt="">
+        </div>
+        <div class="explain">카메라</div>
+        <div class="animate__animated animate__shakeX animate__delay-1s" id="check">
+            <span class="check">{{check}}</span>
         </div>
 
-        <div class="field">
-            <label for= "member_name" class="labelid">이름 </label>
-            <input name = "member_name"  id="member_name" required>
-            <span class="label">홍길동</span>
-        </div>
-        <br>
-            
-        <video autoplay playsinline></video>
-        <br>
-        {% comment %} <link rel='stylesheet' type="text/css" media="all" href="{% static 'css/main.css' %}"/> {% endcomment %}
-        <script src="{% static 'js/capture.js' %}">	</script>
-        <div class="contentarea">
-            <div class="camera">
-            <video id="video">Video stream not available.</video>
+        {% comment %} 혜원 비디오 캡쳐 코드 {% endcomment %}
+        <form method="POST"  action ="{%url 'exam2'%}"   enctype="multipart/form-data" >
+            {% csrf_token %}
+            <div class="field">
+                <label for= "member_number" class="labelid">학번&nbsp / &nbsp 수험번호</label>
+                <input name="member_number" id="member_number"  required >
+                <span class="label">123456789</span>
             </div>
-            <canvas id="canvas">
-            </canvas>
-        </div>
-        <div class="output">
-        <div class="field">
-            <img id="photo" alt="The screen capture will appear in this box.">
-        </div>
 
-        <br>
-
-        <div align="center">
-            <button type="button" class ="bt_enter_room_recognition" id="bt_enter_room_recognition" onclick="bt_enter_room_recognition_func()" >방입장</button>
+            <div class="field">
+                <label for= "member_name" class="labelid">이름 </label>
+                <input name = "member_name"  id="member_name" required>
+                <span class="label">홍길동</span>
+            </div>
+                
+            <video autoplay playsinline></video>
             <br>
-            <script src="http://code.jquery.com/jquery-3.4.1.min.js"></script>
-            <script type="text/javascript">
-                function bt_enter_room_recognition_func(){
-                    photo =document.getElementById('photo');
-                    member_number = document.querySelector('input[name = "member_number"]');
-                    member_name = document.querySelector('input[name = "member_name"]');
-                    if ( member_number.value == '' || member_name.value=='' ) {
-                        alert('모두 입력해주세요');
-                        return;
-                    }
-                    $.ajax({                       
-                        type: 'POST',
-                        url: '{%url 'exam2'%}',
-                        data: { 'photo' : photo.src,
-                                'member_number' : member_number.value,
-                                'member_name' : member_name.value },
-                        success: function (data){
-                            console.log(data['result']);
-                            if (data['result'] == "NO_NAME" || data['result'] == "NO_MEMBER"){
-                                alert("회원정보 실패");
-                                {% comment %} 다음페이지넘어가는코드여기적으면됨! {% endcomment %}
-                                return;
-                            }else if (data['result'] == "NO_IMAGE_MATCH"){
-                                alert("얼굴 확인 실패.");
-                                return;
-                            }else{
-                                alert("얼굴 확인 성공");
-                                {% comment %} 다음페이지넘어가는코드여기적으면됨! {% endcomment %}
-                                return;
-                            }
+            <link rel='stylesheet' type="text/css" media="all" href="{% static 'css/main.css' %}"/>
+            <script src="{% static 'js/capture.js' %}">	</script>
+            <div class="contentarea">
+                <div class="camera">
+                <video id="video">Video stream not available.</video>
+                </div>
+                <canvas id="canvas">
+                </canvas>
+            </div>
+            <div class="output">
+            <div class="field">
+                <img id="photo" alt="The screen capture will appear in this box.">
+            </div>  
+
+            <br>
+
+            <div align="center">
+                <button type="button" class ="bt_enter_room_recognition" id="bt_enter_room_recognition" onclick="bt_enter_room_recognition_func()" >방입장</button>
+                <br>
+                <script src="http://code.jquery.com/jquery-3.4.1.min.js"></script>
+                <script type="text/javascript">
+                    function bt_enter_room_recognition_func(){
+                        photo =document.getElementById('photo');
+                        member_number = document.querySelector('input[name = "member_number"]');
+                        member_name = document.querySelector('input[name = "member_name"]');
+                        if ( member_number.value == '' || member_name.value=='' ) {
+                            alert('모두 입력해주세요');
+                            return;
                         }
-                    })
-                }
-            </script>
-        </div>
-        <br>
-        {% if messages %}
-            {% for message in messages %}
-                <div class="row" style="text-align:center">
-                <div class="col-sm-6" style="text-align:center">
-                    <div class="alert alert-danger" style="text-align:center">
-                    <strong>{{ message.tags }}!</strong> {{ message.message }}
+                        $.ajax({                       
+                            type: 'POST',
+                            url: '{%url 'exam2'%}',
+                            data: { 'photo' : photo.src,
+                                    'member_number' : member_number.value,
+                                    'member_name' : member_name.value },
+                            success: function (data){
+                                console.log(data['result']);
+                                if (data['result'] == "NO_NAME" || data['result'] == "NO_MEMBER"){
+                                    alert("회원정보 실패");
+                                    {% comment %} 다음페이지넘어가는코드여기적으면됨! {% endcomment %}
+                                    return;
+                                }else if (data['result'] == "NO_IMAGE_MATCH"){
+                                    alert("얼굴 확인 실패.");
+                                    return;
+                                }else{
+                                    alert("얼굴 확인 성공");
+                                    {% comment %} 다음페이지넘어가는코드여기적으면됨! {% endcomment %}
+                                    return;
+                                }
+                            }
+                        })
+                    }
+                </script>
+            </div>
+            <br>
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="row" style="text-align:center">
+                    <div class="col-sm-6" style="text-align:center">
+                        <div class="alert alert-danger" style="text-align:center">
+                        <strong>{{ message.tags }}!</strong> {{ message.message }}
+                        </div>
                     </div>
-                </div>
-                </div>
-            {% endfor %}
-        {% endif %}
-    </form>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </form>
 
-
-    {% comment %} 혜원코드끝 {% endcomment %}
-
-
-
-    {% comment %} <form action="" method="POST" class="form-next">
-        {% csrf_token %}
-        <button class="next">Next</button>
-    </form> {% endcomment %}
+    </div>
 </div>
 {% endblock%}
