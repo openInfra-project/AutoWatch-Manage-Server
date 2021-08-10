@@ -380,7 +380,7 @@ def study2(request):
     else:
         return redirect('/login')
 
-def list(request):
+def mylist(request):
     res_data={}
     fs = FileSystemStorage()
     user_session = request.session.get('user')
@@ -862,7 +862,7 @@ def app_checkmyinfo(request):
             ### Wrong NAME
             if member_file_name != member_name:
                 print('app_enterEXAM_info_no_match_name_num')
-                return HttpResponse(simplejson.dumps({"roomname": "no"}))
+                return HttpResponse(simplejson.dumps({"roomname": "no",  "password" : "no"}))
             ### Correct NAME
             else:
                 print('app_enterEXAM_info_success')
@@ -871,4 +871,4 @@ def app_checkmyinfo(request):
         ### Wrong NUMBER
         else:
             print('app_enterEXAM_info_no_num')
-            return HttpResponse(simplejson.dumps({"roomname": "fail"}))
+            return HttpResponse(simplejson.dumps({"roomname": "fail", "password" : "no"}))
