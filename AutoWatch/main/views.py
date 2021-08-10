@@ -18,6 +18,12 @@ from django.utils.decorators import method_decorator
 from django.http.response import HttpResponse, JsonResponse
 from django.core import serializers
 
+import os
+import base64
+from luxand import luxand
+from openpyxl import load_workbook
+from openpyxl_image_loader import SheetImageLoader
+
 
 
 def main(request):
@@ -89,6 +95,19 @@ def makeroom(request):
         
                 if exam and not(study):
                     file = request.FILES['file']
+                    #학생명단 file
+                    #명단에서학번만 추출
+                    member_list=[]
+                    fs = FileSystemStorage()
+                    filename = fs.save(file.name, file)
+                    print(filename)
+
+                    member = load_workbook("media/" + file.name)
+                    for cell in member['Sheet1']['A']:
+                        member_list.append(cell.value)
+                    
+                    os.remove(os.path.join(settings.MEDIA_ROOT, file.name))
+
                 elif study and not(exam):
                     file = "NULL"
                 # makeroom POST 값 저장
@@ -115,7 +134,7 @@ def makeroom(request):
                         elif exam and not(study):
                             mode = 'EXAM'
                         room = Room(room_name=room_name, room_password=room_password,
-                                    file=file, mode=mode, maker=maker)  # db에 room 정보 저장
+                                    file=file, mode=mode, maker=maker, member_list = member_list)  # db에 room 정보 저장
                         room.save()
                         return redirect('/main/makeroom/success')
                 # room 정보 비정상 일시
@@ -260,6 +279,7 @@ def exam1(request):
     else:
         return redirect('/login')
 
+@csrf_exempt
 def exam2(request):
     res_data={}
     fs = FileSystemStorage()
@@ -277,9 +297,86 @@ def exam2(request):
             res_data['img_check'] = 1
             
         if request.method == 'GET':
+
             return render(request,'enter_exam2.html',res_data)
+
         elif request.method == 'POST':
-            return redirect('/main/enteroom/exam3')
+            print("POST")
+            info={}
+            room_name=request.session.get('room_name')
+            member_number = request.POST.get('member_number')
+            member_name = request.POST.get('member_name')
+            if (member_number == None):
+                return render(request,'enter_exam2.html',res_data)
+            
+            print("Get All DATA ")
+
+            #해당방의 DB속 명단Excel파일 조회
+            room = Room.objects.get(room_name=room_name)
+            member_file=room.file #명단
+            print(member_file)
+
+
+            #DB의 member_list로 회원번호 확인 및 index 추출
+            member_list=room.member_list #회원번호만 적힌 리스트
+            member_list= member_list[1:-1].split(', ')
+            print(member_list)
+
+            # CHECK NUMBER
+            ### Correct NUMBER
+            if (member_number in member_list):
+                member_index=member_list.index(member_number) +1 #index=0은'회원번호(수험번호/학번)'이므로 index로 추출된 수 +1로 쓰면됨!
+                print('member_index:'+str(member_index))
+                member = load_workbook("media/" + str(member_file))
+                sheet = member['Sheet1']
+                member_file_name = sheet['B'+str(member_index)].value 
+                
+                # CHECK NAME
+                ### Wrong NAME
+                if member_file_name != member_name:
+                    info['result'] = "NO_NAME"
+                    print('no_name')
+                ### Correct NAME
+                else:
+                    # WEB : 캡쳐이미지 받기
+                    member_image_data = request.POST.__getitem__('photo')
+                    member_image_data = member_image_data[22:]
+                    member_image_path = str(room_name)+'_'+str(member_number)+'_capture.png'
+                    member_image = open(os.path.join(FileSystemStorage().location)+str("\\capture/")+member_image_path, "wb")
+                    member_image.write(base64.b64decode(member_image_data))
+                    member_image.close()
+
+                    # exel 명단 속 이미지
+                    image_loader = SheetImageLoader(sheet)
+                    image = image_loader.get('C'+str(member_index))
+
+                    member_file_image_path = (room_name+"_"+str(member_number)+".jpg")
+                    image.save("media/capture/"+member_file_image_path)
+                    fs = FileSystemStorage()
+
+                    # Face Recognition
+                    a=(fs.location +str("\capture/")+ member_file_image_path)
+                    b=(fs.location +str("\capture/")+ member_image_path )
+                    # luxand API
+                    luxand_client = luxand("12a42a8efedf4e24b84730ce440e5429")
+                    member_file_image = luxand_client.add_person(str(member_file_name), photos=[a])
+                    result = luxand_client.verify(member_file_image, photo=b)
+                    print(result)
+
+                    # Recognition RESULT
+                    if result['status']=='success':
+                        info['result']="OK"
+                        print("Recognition_SUCCESS")
+                    else:
+                        info['result']="NO_IMAGE_MATCH"
+                        print("Recognition_FAIL")
+            ### Wrong NUMBER
+            else:
+                #명단 속 존재하지 않는 회원번호 (입장불가!)
+                info['result']="NO_MEMBER"
+                print('no_member')
+                #해당페이지에서 팝업으로 입장불가표시주기
+            return JsonResponse(info)
     else:
         return redirect('/login')
 
@@ -708,37 +805,105 @@ def app_entermyroom(request):
             return HttpResponse(simplejson.dumps({"roomname": room_type}))
 
 
+## EXAM 방
+
 # 이미지 비교해야함
 
 @method_decorator(csrf_exempt, name='dispatch')
 def app_images(request):
     if request.method == "POST":
-        res_data = {}
-        a = request.FILES
-        image = a['image']
+        # APP : 캡쳐이미지 받기
+        image = request.FILES['image']
         print(image)
+        # image.name = <room_name>_<member_number>_capture.png
         fs = FileSystemStorage()
         filename = fs.save("capture/"+image.name, image)
         uploaded_file_url = fs.url(filename)
         print(filename)
         print(uploaded_file_url)
-        text = list(image.name)
-        del text[len(text)-4:len(text)]
-        a = ''.join(text)
-        return HttpResponse(simplejson.dumps({"image": "ok"}))  # 이미지 전송완료
+
+
+        # image.name 에서 분리
+        l = image.name.split('_')
+        room_name = l[0]
+        member_index = l[1]
+
+        print("Get All DATA ")
+
+        # Room DB - excel 파일
+        room = Room.objects.get(room_name=room_name)
+        member_file=room.file #명단
+        member = load_workbook("media/room/" + str(member_file))
+        sheet = member['Sheet1']
+
+        # exel 명단 속 이미지
+        image_loader = SheetImageLoader(sheet)
+        image = image_loader.get('C'+str(member_index))
+        member_file_image_path = (room_name+"_"+str(member_index)+".jpg")
+        image.save("media/capture/"+member_file_image_path)
+        fs = FileSystemStorage()
+
+        # Face Recognition
+        a=(fs.location +str("\capture/")+ member_file_image_path)
+        b=(fs.location +str("\capture/")+ image.name )
+        # luxand API
+        luxand_client = luxand("12a42a8efedf4e24b84730ce440e5429")
+        member_file_image = luxand_client.add_person(str(member_index), photos=[a])
+        result = luxand_client.verify(member_file_image, photo=b)
+        print(result)
+
+        # Recognition RESULT
+        if result['status']=='success':            
+            print("Recognition_SUCCESS")
+            return HttpResponse(simplejson.dumps({"image": "ok"}))  # 이미지 전송완료
+        else:
+            print("Recognition_FAIL")
+            return HttpResponse(simplejson.dumps({"image": "no"}))  # 이미지 전송실패
+
+        
 
 # EXAM방 입장시 학번,이름 매칭확인
-
 
 @method_decorator(csrf_exempt, name='dispatch')
 def app_checkmyinfo(request):
     if request.method == "POST":
-        name = request.POST.get('name', None)
-        number = request.POST.get('number', None)
+        info={}
+        # change_here
+        room_name = request.POST.get('room', None)
+        member_name  = request.POST.get('name', None)
+        member_number  = request.POST.get('number', None)
 
-        print(name)
-        print(number)
+        # room DB-member_list로 회원번호 확인 및 index 추출
+        room = Room.objects.get(room_name=room_name)
+        member_list=room.member_list #회원번호만 적힌 리스트
+        member_list= member_list[1:-1].split(', ')
+        print(member_list)
 
-        # 엑셀파일에서 비교
+        # CHECK NUMBER
+        ### Correct NUMBER
+        if (member_number in member_list):
+            member_index=member_list.index(member_number) +1
+            print('member_index:'+str(member_index))
+            
+            #해당방의 DB속 명단Excel파일 조회
+            room = Room.objects.get(room_name=room_name)
+            member_file=room.file #명단
 
-        return HttpResponse(simplejson.dumps({"roomname": "yes"}))
+            member = load_workbook("media/room/" + str(member_file))
+            sheet = member['Sheet1']
+            member_file_name = sheet['B'+str(member_index)].value 
+            
+            # CHECK NAME
+            ### Wrong NAME
+            if member_file_name != member_name:
+                print('app_enterEXAM_info_no_match_name_num')
+                return HttpResponse(simplejson.dumps({"roomname": "no",  "password" : "no"}))
+            ### Correct NAME
+            else:
+                print('app_enterEXAM_info_success')
+                return HttpResponse(simplejson.dumps({"roomname": "yes", "password" : member_index }))
+        
+        ### Wrong NUMBER
+        else:
+            print('app_enterEXAM_info_no_num')
+            return HttpResponse(simplejson.dumps({"roomname": "fail", "password" : "no"}))
