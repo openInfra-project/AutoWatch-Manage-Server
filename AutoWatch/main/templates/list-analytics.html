@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="/static/assets/css/main.css">
     <link rel="stylesheet" href="/static/assets/css/makeroom.css">
     <link rel="stylesheet" href="/static/assets/css/enterroom.css?after">
-    <link rel="stylesheet" href="/static/assets/css/list.css?after?after">
+    <link rel="stylesheet" href="/static/assets/css/list.css?after?after?after">
     <link rel="stylesheet" href="/static/assets/css/animated.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link rel="stylesheet" href="/static/assets/css/owl.css">
@@ -54,19 +54,24 @@
       <div class="inner">
         <div class="list-detail-wapper">
           <img src="/static/assets/images/previous.png" alt="" class="back" onclick="location.href='/main/list'">
-          <div class="detail-explain">
-            <span> 모든 점수의 최고점은 100점이며 ~~</span>
+          <div id="detail-explain" class="animate__animated animate__rubberBand animate__delay-0.8s">
+            <span >{{username}}님의 집중도는 <span style="color: #5f3dc4;">level 3</span> 입니다!</span>
           </div>
           <div class="list-detail">
-            <span>{{username}}님의 집중도는 level 3 입니다!</span>
-            <h3>{{ chartTitle|safe }}</h3>
+            <div class="list-detail-text">
+              <div class="list-detail-text1">
+                <span class="list-detail-main">해당 룸의 4명중 <span style="color: #5f3dc4;">2등</span> 입니다!</span>
+              </div>
+              <div class="list-detail-text2">
+                <span class="list-detail-sub"> 모든 점수의 최고점은 100점이며, <br> 학습시간의 경우 2시간이 넘으면 동일하게 100점 입니다.</span>
+              </div>
+            </div>
+            <h3>{{ chartTitle|safe }}</h3 >
             <div id="chart-1">{{ output|safe }}</div>
             <div id="chart-2">{{ output_2|safe }}</div>
           </div>
         </div>
       </div> 
     </div>
-
-  
 </body>
 </html>

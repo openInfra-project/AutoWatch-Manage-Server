@@ -13,7 +13,7 @@ urlpatterns = [
     path('enteroom/exam3',views.exam3),
     path('enteroom/study1',views.study1),
     path('enteroom/study2',views.study2),
-    path('list/',views.list),
+    path('list/',views.mylist),
     path('list/room', RoomList.as_view()),
     path('list/analytics',AnalyticsList.as_view()),
     path('list/analytics/<int:pk>',views.analyticsDetail),

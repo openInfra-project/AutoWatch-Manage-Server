@@ -132,7 +132,49 @@
 }
 .list-detail{
     display: flex;
+    /* justify-content: center;
+    align-items: center; */
+}
+.list-detail-text{
+    display: grid;
+}
+.list-detail-text1{
+    display: flex;
     justify-content: center;
     align-items: center;
+}
+.list-detail-text2{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.list-detail-main{
+    margin-top: 100px;
+    margin-right: 20px;
+    font-size: 20px;
+    font-weight: 550;
+    color: #33ccc5;
+}
+.list-detail-sub{
+    margin-top: 100px;
+    margin-right: 20px;
+    font-size: 15px;
+}
+#detail-explain{
+    font-size: 25px;
+    color: #33ccc5;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.cancel{
+    width: 42px;
+    height: 42px;
+    cursor: pointer;
+    display: inline;
+}
+.cancel:hover{
+    content: url(/static/assets/images/cancel\ \(6\).png);
 }
 /* 집중도 list detail END */

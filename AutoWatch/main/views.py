@@ -371,7 +371,7 @@ def study2(request):
     else:
         return redirect('/login')
 
-def list(request):
+def mylist(request):
     res_data={}
     fs = FileSystemStorage()
     user_session = request.session.get('user')
@@ -470,7 +470,7 @@ def analyticsDetail(request,pk):
         chartConfig = OrderedDict()
         chartConfig["caption"] = "집중도 통계"                #!!!!!!!!!!!!!!!!!!집중도 레벨 판별 해야함
         chartConfig["yAxisName"] = "점수"
-        chartConfig["numberSuffix"] = "" #y축 숫자단위
+        chartConfig["numberSuffix"] = "점" #y축 숫자단위
         chartConfig["theme"] = "fusion" #테마
 
         dataSource["chart"] = chartConfig # 그래프 특징 설정
@@ -478,9 +478,9 @@ def analyticsDetail(request,pk):
         column2D = FusionCharts("column2d", "myFirstChart", "500", "400", "chart-1", "json", dataSource)
         res_data['output'] = column2D.render()
         if request.method == 'GET':
-            return render(request,'analytics.html',res_data)
+            return render(request,'list-analytics.html',res_data)
         elif request.method == 'POST':
-            return  render(request,'analytics.html',res_data)
+            return  render(request,'list-analytics.html',res_data)
     else:
         return redirect('/login')
 
@@ -499,82 +499,28 @@ def analytics(request):
             res_data['img_check'] = 0
         else:
             res_data['img_check'] = 1
-            
+
+        analytics = Analytics.objects.filter(email=user.email).last()
+        dataSource = OrderedDict()
+        dataSource["data"] = [] #chartdata는 json형식이다.
+        dataSource["data"].append({"label": '앱 차단', "value": analytics.app})
+        dataSource["data"].append({"label": '자리이탈', "value": analytics.person})
+        dataSource["data"].append({"label": '학습시간', "value": analytics.time})
+
+        chartConfig = OrderedDict()
+        chartConfig["caption"] = "집중도 통계"  
+        chartConfig["numberSuffix"] = "점" #y축 숫자단위
+        chartConfig["theme"] = "fusion" #테마
+
+        dataSource["chart"] = chartConfig # 그래프 특징 설정
+
+        column2D = FusionCharts("column2d", "myFirstChart", "500", "400", "chart-1", "json", dataSource)
+        res_data['output'] = column2D.render()            
         if request.method == 'GET':
-            analytics = Analytics.objects.get(email=user.email)  #!!!!!!!!!!!!!!!!!!!!!!!!!!나중에 제일 최근애를 가져오는 get함수로 바꿔야함
-             #chartdata 선언
-            # analytics = Analytics.objects.all()
-            
-            print("!!!!!!!!!!!!!!!!!!!!!!!!!",analytics)
-            dataSource = OrderedDict()
-            dataSource["data"] = [] #chartdata는 json형식이다.
-            dataSource["data"].append({"label": '앱 차단', "value": analytics.app})
-            dataSource["data"].append({"label": '자리이탈', "value": analytics.person})
-
-            chartConfig = OrderedDict()
-            chartConfig["caption"] = "집중도 level 3"                #!!!!!!!!!!!!!!!!!!집중도 레벨 판별 해야함
-            chartConfig["subCaption"] = "집중도 통계"
-            chartConfig["xAxisName"] = "목록"
-            chartConfig["yAxisName"] = "수치"
-            chartConfig["numberSuffix"] = "" #y축 숫자단위
-            chartConfig["theme"] = "fusion" #테마
-
-            dataSource["chart"] = chartConfig # 그래프 특징 설정
-
-            column2D = FusionCharts("column2d", "myFirstChart", "450", "350", "chart-1", "json", dataSource)
-            res_data['output'] = column2D.render()
-
-            return render(request,'analyticslist.html',res_data)
+            return render(request,'roomout-analytics.html',res_data)
         elif request.method == 'POST':
 
-            return  render(request,'analyticslist.html',res_data)
-    else:
-        return redirect('/login')
-
-def analyticsList(request):
-    res_data={}
-    fs = FileSystemStorage()
-    user_session = request.session.get('user')
-    if user_session:
-        user = User.objects.get(pk=user_session)    # 로그인 체크
-        res_data['username'] = user.username        # mypage 정보
-        res_data['email'] = user.email
-        res_data['register'] = user.registerd_date
-        res_data['userimg'] = fs.url(user.image)
-
-        if res_data['userimg'] == "/media/":               # 이미지 체크
-            res_data['img_check'] = 0
-        else:
-            res_data['img_check'] = 1
-            
-        if request.method == 'GET':
-            analytics = Analytics.objects.get(email=user.email)  #!!!!!!!!!!!!!!!!!!!!!!!!!!나중에 제일 최근애를 가져오는 get함수로 바꿔야함
-             #chartdata 선언
-            # analytics = Analytics.objects.all()
-            
-            print("!!!!!!!!!!!!!!!!!!!!!!!!!",analytics)
-            dataSource = OrderedDict()
-            dataSource["data"] = [] #chartdata는 json형식이다.
-            dataSource["data"].append({"label": '앱 차단', "value": analytics.app})
-            dataSource["data"].append({"label": '자리이탈', "value": analytics.person})
-
-            chartConfig = OrderedDict()
-            chartConfig["caption"] = "집중도 level 3"                #!!!!!!!!!!!!!!!!!!집중도 레벨 판별 해야함
-            chartConfig["subCaption"] = "집중도 통계"
-            chartConfig["xAxisName"] = "목록"
-            chartConfig["yAxisName"] = "수치"
-            chartConfig["numberSuffix"] = "" #y축 숫자단위
-            chartConfig["theme"] = "fusion" #테마
-
-            dataSource["chart"] = chartConfig # 그래프 특징 설정
-
-            column2D = FusionCharts("column2d", "myFirstChart", "450", "350", "chart-1", "json", dataSource)
-            res_data['output'] = column2D.render()
-
-            return render(request,'analyticslist.html',res_data)
-        elif request.method == 'POST':
-
-            return  render(request,'analyticslist.html',res_data)
+            return  render(request,'roomout-analytics.html',res_data)
     else:
         return redirect('/login')
 
