@@ -189,8 +189,10 @@ def app_check(request):
 def app_sendcount(request):
     if request.method == "POST":
         email = request.POST.get('email', None)
-        count = request.POST.get('count', None)
+        count = request.POST.get('count', None)  # 앱 접근횟수
+        nonperson = request.POST.get('nonperson', None)  # 자리이탈횟수
         print(count)
+        print(nonperson)
         myuser = User.objects.get(email=email)
         myuser.check = False
         myuser.save()
