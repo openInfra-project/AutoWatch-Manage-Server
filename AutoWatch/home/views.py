@@ -6,9 +6,11 @@ import simplejson
 from django.core.files.storage import FileSystemStorage
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+from django.utils.datetime_safe import datetime
 
 # 회원가입
 global count
+
 
 def home(request):
     res_data = {}
@@ -166,11 +168,15 @@ def app_mypage(request):
         myuser = User.objects.get(email=email)
         name = myuser.username
         image = str(myuser.image)
+        date = myuser.registerd_date
+        newdate = date.strftime("%Y-%m-%d %I:%M %p")
+        print(newdate)
+        print(date)
         print(email)
         print(name)
         print(image)
 
-        return HttpResponse(simplejson.dumps({"email": email, "image": image, "name": name}))
+        return HttpResponse(simplejson.dumps({"email": email, "image": image, "name": name, "date": newdate}))
 
 
 @method_decorator(csrf_exempt, name='dispatch')
