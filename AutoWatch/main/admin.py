@@ -4,7 +4,7 @@ from .models import Analytics
 # Register your models here.
 
 class RoomAdmin(admin.ModelAdmin):
-    list_display =('room_name','room_password','file','mode','maker','make_date')
+    list_display =('room_name','room_password','file','mode','maker','make_date','member_list')
 
 admin.site.register(Room, RoomAdmin)
 
