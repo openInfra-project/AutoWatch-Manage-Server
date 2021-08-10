@@ -1,5 +1,5 @@
 from django.urls import path
-from main.views import RoomList
+from main.views import AnalyticsList, RoomList
 from . import views
 
 #  기본 경로 = main/
@@ -15,11 +15,11 @@ urlpatterns = [
     path('enteroom/study2',views.study2),
     path('list/',views.list),
     path('list/room', RoomList.as_view()),
-    path('list/analytics',views.analytics),
+    path('list/analytics',AnalyticsList.as_view()),
+    path('list/analytics/<int:pk>',views.analyticsDetail),
     path('roomout/',views.roomout),
-     path('roomout/analytics',views.analytics),
+    path('roomout/analytics',views.analytics),
     path('saveImages/',views.saveImages),
-
 
     path('app_makeroom', views.app_makeroom),
     path('app_makemyroom', views.app_makemyroom),
