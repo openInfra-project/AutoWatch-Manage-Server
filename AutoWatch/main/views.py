@@ -769,19 +769,55 @@ def app_entermyroom(request):
 @method_decorator(csrf_exempt, name='dispatch')
 def app_images(request):
     if request.method == "POST":
-        res_data = {}
-        a = request.FILES
-        image = a['image']
+        # APP : 캡쳐이미지 받기
+        image = request.FILES['image']
         print(image)
+        # image.name = <room_name>_<member_number>_capture.png
         fs = FileSystemStorage()
         filename = fs.save("capture/"+image.name, image)
         uploaded_file_url = fs.url(filename)
         print(filename)
         print(uploaded_file_url)
-        text = list(image.name)
-        del text[len(text)-4:len(text)]
-        email = ''.join(text)
-        return HttpResponse(simplejson.dumps({"image": "ok"}))  # 이미지 전송완료
+
+
+        # image.name 에서 분리
+        l = image.name.split('_')
+        room_name = l[0]
+        member_index = l[1]
+
+        print("Get All DATA ")
+
+        # Room DB - excel 파일
+        room = Room.objects.get(room_name=room_name)
+        member_file=room.room_member #명단
+        member = load_workbook("media/room/" + str(member_file))
+        sheet = member['Sheet1']
+
+        # exel 명단 속 이미지
+        image_loader = SheetImageLoader(sheet)
+        image = image_loader.get('C'+str(member_index))
+        member_file_image_path = (room_name+"_"+str(member_index)+".jpg")
+        image.save("media/capture/"+member_file_image_path)
+        fs = FileSystemStorage()
+
+        # Face Recognition
+        a=(fs.location +str("\capture/")+ member_file_image_path)
+        b=(fs.location +str("\capture/")+ image.name )
+        # luxand API
+        luxand_client = luxand("12a42a8efedf4e24b84730ce440e5429")
+        member_file_image = luxand_client.add_person(str(member_index), photos=[a])
+        result = luxand_client.verify(member_file_image, photo=b)
+        print(result)
+
+        # Recognition RESULT
+        if result['status']=='success':            
+            print("Recognition_SUCCESS")
+            return HttpResponse(simplejson.dumps({"image": "ok"}))  # 이미지 전송완료
+        else:
+            print("Recognition_FAIL")
+            return HttpResponse(simplejson.dumps({"image": "no"}))  # 이미지 전송실패
+
+        
 
 # EXAM방 입장시 학번,이름 매칭확인
 
@@ -826,7 +862,7 @@ def app_checkmyinfo(request):
             ### Correct NAME
             else:
                 print('app_enterEXAM_info_success')
-                return HttpResponse(simplejson.dumps({"roomname": "yes"}))
+                return HttpResponse(simplejson.dumps({"roomname": "yes", "password" : member_index }))
         
         ### Wrong NUMBER
         else:
