@@ -35,7 +35,7 @@
             <video autoplay playsinline></video>
             <br>
             <link rel='stylesheet' type="text/css" media="all" href="{% static 'css/main.css' %}"/>
-            <script src="{% static 'js/capture.js' %}">	</script>
+            <script src="{% static 'js/capture.js' %}"></script>
             <div class="contentarea">
                 <div class="camera">
                 <video id="video">Video stream not available.</video>
@@ -73,7 +73,6 @@
                                 console.log(data['result']);
                                 if (data['result'] == "NO_NAME" || data['result'] == "NO_MEMBER"){
                                     alert("회원정보 실패");
-                                    {% comment %} 다음페이지넘어가는코드여기적으면됨! {% endcomment %}
                                     return;
                                 }else if (data['result'] == "NO_IMAGE_MATCH"){
                                     alert("얼굴 확인 실패.");
