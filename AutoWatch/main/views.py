@@ -426,11 +426,13 @@ def study1(request):
     else:
         return redirect('/login')
 
-@csrf_exempt
+@method_decorator(csrf_exempt,name='dispatch')
 def study2(request):
     res_data={}
     fs = FileSystemStorage()
     user_session = request.session.get('user')
+    res_data['session'] = user_session
+    print("!!!!!!!!!!!!!",user_session)
     if user_session:
         user = User.objects.get(pk=user_session)    # 로그인 체크
         res_data['username'] = user.username        # mypage 정보
