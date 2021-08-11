@@ -78,6 +78,11 @@
                 </div>
               {%endif%}
             {% endfor%}
+          {% else %}
+            <div id="noroom" class="animate__animated animate__rubberBand animate__delay-0.8s">
+                <span>생성한 집중도 자료가 없습니다!</span>
+                <img src="/static/assets/images/embarrassed.png" alt="">
+            </div>
           {%endif%}
         </div>
     
