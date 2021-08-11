@@ -83,13 +83,13 @@
                       <input name = "member_name"  id="member_name" required>
                       <span class="label">홍길동</span>
                   </div>
-                  <video playsinline></video>
+                  <video autoplay playsinline></video>
                   <br>
                   <link rel='stylesheet' type="text/css" media="all" href="{% static 'css/main.css' %}"/>
                   <script src="{% static 'js/capture.js' %}"></script>
                   <div class="contentarea">
                       <div class="camera">
-                      <video id="video" poster="/static/assets/images/face-recognition.png">Video stream not available.</video>
+                      <video id="video" poster="/static/assets/images/face-recognition.png" autoplay>Video stream not available.</video>
                       </div>
                       <canvas id="canvas">
                       </canvas>
