@@ -134,3 +134,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 FILE_ROOT = os.path.join(BASE_DIR, 'files')
 FILE_URL = '/files/'
+
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880

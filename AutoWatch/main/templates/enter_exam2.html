@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/static/assets/css/templatemo-seo-dream.css?after">
     <link rel="stylesheet" href="/static/assets/css/main.css">
     <link rel="stylesheet" href="/static/assets/css/makeroom.css">
-    <link rel="stylesheet" href="/static/assets/css/enterroom.css?after">
+    <link rel="stylesheet" href="/static/assets/css/enterroom.css?after?after?after">
     <link rel="stylesheet" href="/static/assets/css/list.css">
     <link rel="stylesheet" href="/static/assets/css/animated.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
@@ -52,75 +52,75 @@
     <div class="main">
       <div class="inner">
         {% load static %}
-        <div class="list-wapper"> 
+          <div class="list-wapper"> 
             <div class="enter_exam1">
-                <span class="animate__animated animate__rubberBand" id="enter1-text">{{username}}님의 Room으로 입장 준비!</span>
                 <div class="down-arrow2"><img src="/static/assets/images/down-arrow (1).png" alt=""></div>
-                <div class="progress-icon">
+                <div class="progress-icon2">
                     <img src="/static/assets/images/android (1).png" alt="">
                     <span class="border"></span>
                     <img src="/static/assets/images/face.png" alt="">
                     <span class="border"></span>
                     <img src="/static/assets/images/running.png" alt="">
                 </div>
-                <div class="explain">카메라</div>
                 <div class="animate__animated animate__shakeX animate__delay-1s" id="check">
                     <span class="check">{{check}}</span>
                 </div>
 
+
+                <button id="capture" name="capture">사진 촬영</button>
+                <button id="recapture" name="recapture" style="display: none;">재촬영</button>
                 {% comment %} 혜원 비디오 캡쳐 코드 {% endcomment %}
                 <form method="POST"  action ="{%url 'exam2'%}"   enctype="multipart/form-data" >
-                    {% csrf_token %}
-                    <div class="field">
-                        <label for= "member_number" class="labelid">학번&nbsp / &nbsp 수험번호</label>
-                        <input name="member_number" id="member_number"  required >
-                        <span class="label">123456789</span>
-                    </div>
+                  {% csrf_token %}
+                  <div class="field">
+                      <label for= "member_number" class="labelid">학번&nbsp / &nbsp 수험번호</label>
+                      <input name="member_number" id="member_number"  required >
+                      <span class="label">123456789</span>
+                  </div>
 
-                    <div class="field">
-                        <label for= "member_name" class="labelid">이름 </label>
-                        <input name = "member_name"  id="member_name" required>
-                        <span class="label">홍길동</span>
-                    </div>
-                        
-                    <video autoplay playsinline></video>
-                    <br>
-                    <link rel='stylesheet' type="text/css" media="all" href="{% static 'css/main.css' %}"/>
-                    <script src="{% static 'js/capture.js' %}"></script>
-                    <div class="contentarea">
-                        <div class="camera">
-                        <video id="video">Video stream not available.</video>
-                        </div>
-                        <canvas id="canvas">
-                        </canvas>
-                    </div>
-                    <div class="output">
-                    <div class="field">
-                        <img id="photo" alt="The screen capture will appear in this box.">
-                    </div>  
+                  <div class="field">
+                      <label for= "member_name" class="labelid">이름 </label>
+                      <input name = "member_name"  id="member_name" required>
+                      <span class="label">홍길동</span>
+                  </div>
+                  <video playsinline></video>
+                  <br>
+                  <link rel='stylesheet' type="text/css" media="all" href="{% static 'css/main.css' %}"/>
+                  <script src="{% static 'js/capture.js' %}"></script>
+                  <div class="contentarea">
+                      <div class="camera">
+                      <video id="video" poster="/static/assets/images/face-recognition.png">Video stream not available.</video>
+                      </div>
+                      <canvas id="canvas">
+                      </canvas>
+                  </div>
+                  <div class="output">
+                  <div class="field">
+                      <img id="photo" alt="3초뒤 스크린 샷이 나타 납니다.">
+                  </div>  
 
-                    <br>
+                  <br>
 
-                    <div>
-                        <button type="button" class ="bt_enter_room_recognition" id="bt_enter_room_recognition" onclick="bt_enter_room_recognition_func()" >방입장</button>
-                        <br>
-                    </div>
-                    <br>
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="row" style="text-align:center">
-                            <div class="col-sm-6" style="text-align:center">
-                                <div class="alert alert-danger" style="text-align:center">
-                                <strong>{{ message.tags }}!</strong> {{ message.message }}
-                                </div>
-                            </div>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
+                  <div>
+                      <button type="button" class ="bt_enter_room_recognition" id="bt_enter_room_recognition" onclick="bt_enter_room_recognition_func()" >방입장</button>
+                      <br>
+                  </div>
+                  <br>
+                  {% if messages %}
+                      {% for message in messages %}
+                          <div class="row" style="text-align:center">
+                          <div class="col-sm-6" style="text-align:center">
+                              <div class="alert alert-danger" style="text-align:center">
+                              <strong>{{ message.tags }}!</strong> {{ message.message }}
+                              </div>
+                          </div>
+                          </div>
+                      {% endfor %}
+                  {% endif %}
                 </form>
             </div>
-        </div>
-      </div> 
+          </div>
+        </div> 
     </div>
   </div>
 

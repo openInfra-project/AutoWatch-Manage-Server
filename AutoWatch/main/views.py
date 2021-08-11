@@ -92,12 +92,11 @@ def makeroom(request):
                 study = request.POST.getlist('study')
                 exam = request.POST.getlist('exam')
                 maker = user.email
-        
+                member_list=[]
                 if exam and not(study):
                     file = request.FILES['file']
                     #학생명단 file
                     #명단에서학번만 추출
-                    member_list=[]
                     fs = FileSystemStorage()
                     filename = fs.save(file.name, file)
                     print(filename)
@@ -306,9 +305,6 @@ def exam2(request):
             room_name=request.session.get('room_name')
             member_number = request.POST.get('member_number')
             member_name = request.POST.get('member_name')
-            if (member_number == None):
-                return render(request,'enter_exam2.html',res_data)
-            
             print("Get All DATA ")
 
             #해당방의 DB속 명단Excel파일 조회
