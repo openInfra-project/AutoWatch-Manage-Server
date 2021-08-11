@@ -1,22 +1,221 @@
-{%extends 'base.html'%}
-{% block content%}
-<div class="enter_exam1">
-    <span class="animate__animated animate__rubberBand" id="enter1-text">{{username}}님의 Room으로 입장 준비!</span>
-    <div class="down-arrow2"><img src="/static/assets/images/down-arrow (1).png" alt=""></div>
-    <div class="progress-icon">
-        <img src="/static/assets/images/android (1).png" alt="">
-        <span class="border"></span>
-        <img src="/static/assets/images/face.png" alt="">
-        <span class="border"></span>
-        <img src="/static/assets/images/running.png" alt="">
+<!DOCTYPE html>
+<html lang="ko" id="html">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoWatch</title>
+    <link href="/static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Additional CSS Files -->
+    <link rel="stylesheet" href="/static/assets/css/fontawesome.css">
+    <link rel="stylesheet" href="/static/assets/css/templatemo-seo-dream.css?after">
+    <link rel="stylesheet" href="/static/assets/css/main.css">
+    <link rel="stylesheet" href="/static/assets/css/makeroom.css">
+    <link rel="stylesheet" href="/static/assets/css/enterroom.css?after">
+    <link rel="stylesheet" href="/static/assets/css/list.css">
+    <link rel="stylesheet" href="/static/assets/css/animated.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="/static/assets/css/owl.css">
+</head>
+<body>
+  <div class="king" id="king">
+    <!-- ***** Header Area Start ***** -->
+    <div class="animate__animated animate__fadeInDown animate__delay-0.8s">
+      <header class="header-area">
+        <div class="container">
+          <div class="row">
+            <div class="col-12">
+                <nav class="main-nav">
+                  <!-- ***** Logo Start ***** -->
+                  <a href="/main" class="logo">
+                    <h4>Auto Watch <img src="/static/assets/images/자동감시로고_-removebg-preview.png" alt="" class="auto_logo"></h4>
+                  </a>
+                  <!-- ***** Logo End ***** -->
+                  <!-- ***** Menu Start ***** -->
+                  <ul class="nav">
+                    <li class="scroll-to-section"><a id="nav_mypage" name="nav_mypage">My page</a></li>
+                    <li class="scroll-to-section"><a href="/main/list">My List</a></li>
+                    <li class="scroll-to-section"><a href="/logout">Logout</a></li>
+                    <li class="scroll-to-section"><div class="main-blue-button"><a id="nav_mypage2" name="nav_mypage2">{{username}}님 안녕하세요.</a></div></li>
+                  </ul>
+                  <a class='menu-trigger'>
+                      <span>Menu</span>
+                  </a>
+                  <!-- ***** Menu End ***** -->
+                </nav>
+            </div>
+          </div>
+        </div>
+      </header>
     </div>
-    <div class="explain">카메라</div>
-    <div class="animate__animated animate__shakeX animate__delay-1s" id="check">
-        <span class="check">{{check}}</span>
+    <!-- ***** Header Area End ***** -->
+    <div class="main">
+      <div class="inner">
+        {% load static %}
+        <div class="list-wapper"> 
+            <div class="enter_exam1">
+                <span class="animate__animated animate__rubberBand" id="enter1-text">{{username}}님의 Room으로 입장 준비!</span>
+                <div class="down-arrow2"><img src="/static/assets/images/down-arrow (1).png" alt=""></div>
+                <div class="progress-icon">
+                    <img src="/static/assets/images/android (1).png" alt="">
+                    <span class="border"></span>
+                    <img src="/static/assets/images/face.png" alt="">
+                    <span class="border"></span>
+                    <img src="/static/assets/images/running.png" alt="">
+                </div>
+                <div class="explain">카메라</div>
+                <div class="animate__animated animate__shakeX animate__delay-1s" id="check">
+                    <span class="check">{{check}}</span>
+                </div>
+
+                {% comment %} 혜원 비디오 캡쳐 코드 {% endcomment %}
+                <form method="POST"  action ="{%url 'exam2'%}"   enctype="multipart/form-data" >
+                    {% csrf_token %}
+                    <div class="field">
+                        <label for= "member_number" class="labelid">학번&nbsp / &nbsp 수험번호</label>
+                        <input name="member_number" id="member_number"  required >
+                        <span class="label">123456789</span>
+                    </div>
+
+                    <div class="field">
+                        <label for= "member_name" class="labelid">이름 </label>
+                        <input name = "member_name"  id="member_name" required>
+                        <span class="label">홍길동</span>
+                    </div>
+                        
+                    <video autoplay playsinline></video>
+                    <br>
+                    <link rel='stylesheet' type="text/css" media="all" href="{% static 'css/main.css' %}"/>
+                    <script src="{% static 'js/capture.js' %}"></script>
+                    <div class="contentarea">
+                        <div class="camera">
+                        <video id="video">Video stream not available.</video>
+                        </div>
+                        <canvas id="canvas">
+                        </canvas>
+                    </div>
+                    <div class="output">
+                    <div class="field">
+                        <img id="photo" alt="The screen capture will appear in this box.">
+                    </div>  
+
+                    <br>
+
+                    <div>
+                        <button type="button" class ="bt_enter_room_recognition" id="bt_enter_room_recognition" onclick="bt_enter_room_recognition_func()" >방입장</button>
+                        <br>
+                    </div>
+                    <br>
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="row" style="text-align:center">
+                            <div class="col-sm-6" style="text-align:center">
+                                <div class="alert alert-danger" style="text-align:center">
+                                <strong>{{ message.tags }}!</strong> {{ message.message }}
+                                </div>
+                            </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+      </div> 
     </div>
-    <form action="" method="POST" class="form-next">
+  </div>
+
+  <div class="animate__animated animate__slideInRight" id="mypage">
+    <div class="mypage-inner">
+      <img src="/static/assets/images/cancel.png" alt="" class="cancel" id="cancel" name="cancel">
+      <span class="my_text">My Page</span>
+      {% if img_check == 0 %}
+        <img src="/static/assets/images/face-recognition.png" alt="" id="user-img">
+      {% elif img_check == 1%}
+        <img src="{{userimg}}" alt="" id="user-img">
+      {%endif%}
+      <div class="user-email">
+        <img src="/static/assets/images/email.png" alt="" class="info"><span class="main-span">Email: </span><span class="sub-span">{{email}}</span>
+      </div>
+      <div class="user-name">
+        <img src="/static/assets/images/user.png" alt="" class="info"><span class="main-span">Name: </span><span class="sub-span">{{username}}</span>
+      </div>
+      <div class="user-register">
+        <img src="/static/assets/images/schedule.png" alt="" class="info"><span class="main-span">Date: </span><span class="sub-span">{{register}}</span>
+      </div>
+      <form method="POST" id="edit" enctype="multipart/form-data">
         {% csrf_token %}
-        <button class="next">Next</button>
-    </form>
+        <label for="user-img-change" class="user-img-change">이미지 설정하기</label>
+        <input type="file" id="user-img-change" name="user-img-change" accept=".png, .jpeg, .jpg">
+        <button class="user-img-btn" id="user-img-btn" name="user-img-btn" value="모달">변경하기</button>
+      </form>
+    </div>
 </div>
-{% endblock%}
+
+
+
+<script>
+  // 모달 이벤트
+  let my = document.getElementById('mypage');  // my page
+  let btn2 = document.getElementById('nav_mypage2'); // 상단바의 두번째 my page 버튼
+  let btn = document.getElementById('nav_mypage');  // 상단바의 mypage 버튼
+  let king = document.getElementById('king');  // background 설정
+  btn.addEventListener('click', function(){
+    my.style.display ='flex';
+    king.style.opacity = '0.5';
+    king.style.pointerEvents = 'none';
+  })
+ btn2.addEventListener('click',function(){
+    my.style.display ='flex';
+    king.style.opacity = '0.5';
+    king.style.pointerEvents = 'none';
+ })
+  let exit = document.getElementById('cancel');
+  exit.addEventListener('click',function(){
+    king.style.opacity = '1';
+    king.style.pointerEvents = 'all';
+    my.style.display ='none';
+  })
+
+  // 모달안에 사진 변경 이벤트
+  let file = document.getElementById('user-img-change');
+  let file_submit = document.getElementById('user-img-btn');
+  file.addEventListener('click',function(){
+    file.style.marginLeft = '70px'
+    file_submit.style.display = 'inline'
+  })
+</script>
+
+<script src="http://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script type="text/javascript">
+    function bt_enter_room_recognition_func(){
+        photo =document.getElementById('photo');
+        member_number = document.querySelector('input[name = "member_number"]');
+        member_name = document.querySelector('input[name = "member_name"]');
+        if ( member_number.value == '' || member_name.value=='' ) {
+            alert('모두 입력해주세요');
+            return;
+        }
+        $.ajax({                       
+            type: 'POST',
+            url: '/main/enteroom/exam2',
+            data: { 'photo' : photo.src,
+                    'member_number' : member_number.value,
+                    'member_name' : member_name.value },
+            success: function (data){
+                console.log(data['result']);
+                if (data['result'] == "NO_NAME" || data['result'] == "NO_MEMBER"){
+                    alert("회원정보 실패");
+                    return;
+                }else if (data['result'] == "NO_IMAGE_MATCH"){
+                    alert("얼굴 확인 실패.");
+                    return;
+                }else{
+                    alert("얼굴 확인 성공");
+                    return;
+                }
+            }
+        })
+    }
+</script>
+</body>
+</html>
