@@ -8,6 +8,7 @@
     var photo = null;
     let btn_capture = document.getElementById('capture')
     let btn_recapture = document.getElementById('recapture')
+    let btn_div = document.getElementById('exam2-btn')
 
     function startup() {   // 기본 사진 촬영 함수
     console.log("startup")
@@ -132,7 +133,8 @@
 //        alert("here"+canvas.toDataURL())
         photo.setAttribute('src', data);
         video.style.display = 'none'  // 비디오 안보이기
-        btn_recapture.style.display = 'flex'
+        btn_recapture.style.display = 'inline-block'
+        btn_div.style.marginTop = '20px'
       } else {
         clearphoto();
       }
@@ -149,7 +151,7 @@
    
 //        alert("here"+canvas.toDataURL())
         photo.setAttribute('src', data);
-        photo.style.display = 'flex'
+        photo.style.display = 'inline-block'
         video.style.display = 'none'  // 비디오 안보이기
       } else {
         reclearphoto();
@@ -158,6 +160,6 @@
 
     // Set up our event listener to run the startup process
     // once loading is complete.
-    btn_capture.addEventListener('click', startup, false);
+    window.addEventListener('load',startup)
     btn_recapture.addEventListener('click', restartup, false);
   })();

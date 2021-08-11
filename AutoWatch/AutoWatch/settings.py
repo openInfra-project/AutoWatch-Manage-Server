@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'home',
     'main',
+    'sslserver',
 ]
 
 MIDDLEWARE = [

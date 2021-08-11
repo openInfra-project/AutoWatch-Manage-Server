@@ -107,7 +107,7 @@
     .down-arrow2 img{
         width: 12px;
         height: 17px;
-        margin-left: 459px;
+        margin-left: 465px;
     }
     .down-arrow3 img{
         width: 12px;
@@ -196,5 +196,90 @@
         margin-top: 5px;
     }
 
+    .main-data{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 30px;
+    }
+    .main-camera{
+        display: inline-block;
+        margin-right: 50px;
+    }
+
+    .next2{
+        width: 220px;
+        height: 60px;
+        display: inline-block;
+        background-color: #4771cb;
+        font-weight: 400;
+        font-size: 25px;
+        color: #fff;
+        text-transform: capitalize;
+        padding: 12px 25px;
+        border-radius: 23px;
+        letter-spacing: 0.25px;
+        border-bottom: 3px solid #33ccc5!important;
+        transition: all .3s;
+    }
+    #recapture{
+        margin: 0 40px 0 0;
+        width: 120px;
+        height: 60px;
+        display: none;
+        background-color: #4771cb;
+        font-weight: 370;
+        font-size: 26px;
+        color: #fff;
+        text-transform: capitalize;
+        border-radius: 23px;
+        letter-spacing: 0.25px;
+        border-bottom: 3px solid #33ccc5!important;
+        transition: all .3s;
+    }
+    #recapture:hover, .next2:hover{
+        background-color: #33ccc5;
+        border-bottom: 3px solid #4771cb!important;
+    }
+
+    .main-input label{
+        font-size: large;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+    .main-input input{
+        border: none;
+        margin-left: 10px;
+        margin-top: 50px;
+        width: 200px;
+        height: 40px;
+        background-color: #f1f3f5;
+        border-bottom: 3px solid #adb5bd;
+        font-size: large;
+        text-align: center;
+    }
+
+    .main-input-name label{
+        margin-left: 88px;
+    }
+    .main-input-name{
+        margin-bottom: 60px;
+    }
+
+    .main-input input:focus{
+        border-bottom: 3px solid #4771cb;
+    }
+
+    .exam2-btn{
+        width: 100%;
+        height: 80px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #lotties{
+        display: none;
+    }
     /* enter_exam2 END */
 

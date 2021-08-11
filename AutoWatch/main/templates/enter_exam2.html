@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko" id="html">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,6 +16,7 @@
     <link rel="stylesheet" href="/static/assets/css/list.css">
     <link rel="stylesheet" href="/static/assets/css/animated.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel='stylesheet' type="text/css" media="all" href="{% static 'css/main.css' %}"/>
     <link rel="stylesheet" href="/static/assets/css/owl.css">
 </head>
 <body>
@@ -51,78 +53,66 @@
     <!-- ***** Header Area End ***** -->
     <div class="main">
       <div class="inner">
-        {% load static %}
-          <div class="list-wapper"> 
-            <div class="enter_exam1">
-                <div class="down-arrow2"><img src="/static/assets/images/down-arrow (1).png" alt=""></div>
-                <div class="progress-icon2">
-                    <img src="/static/assets/images/android (1).png" alt="">
-                    <span class="border"></span>
-                    <img src="/static/assets/images/face.png" alt="">
-                    <span class="border"></span>
-                    <img src="/static/assets/images/running.png" alt="">
-                </div>
-                <div class="animate__animated animate__shakeX animate__delay-1s" id="check">
-                    <span class="check">{{check}}</span>
-                </div>
-
-
-                <button id="capture" name="capture">사진 촬영</button>
-                <button id="recapture" name="recapture" style="display: none;">재촬영</button>
-                {% comment %} 혜원 비디오 캡쳐 코드 {% endcomment %}
-                <form method="POST"  action ="{%url 'exam2'%}"   enctype="multipart/form-data" >
-                  {% csrf_token %}
-                  <div class="field">
-                      <label for= "member_number" class="labelid">학번&nbsp / &nbsp 수험번호</label>
-                      <input name="member_number" id="member_number"  required >
-                      <span class="label">123456789</span>
-                  </div>
-
-                  <div class="field">
-                      <label for= "member_name" class="labelid">이름 </label>
-                      <input name = "member_name"  id="member_name" required>
-                      <span class="label">홍길동</span>
-                  </div>
-                  <video autoplay playsinline></video>
-                  <br>
-                  <link rel='stylesheet' type="text/css" media="all" href="{% static 'css/main.css' %}"/>
-                  <script src="{% static 'js/capture.js' %}"></script>
-                  <div class="contentarea">
-                      <div class="camera">
-                      <video id="video" poster="/static/assets/images/face-recognition.png" autoplay>Video stream not available.</video>
-                      </div>
-                      <canvas id="canvas">
-                      </canvas>
-                  </div>
-                  <div class="output">
-                  <div class="field">
-                      <img id="photo" alt="3초뒤 스크린 샷이 나타 납니다.">
-                  </div>  
-
-                  <br>
-
-                  <div>
-                      <button type="button" class ="bt_enter_room_recognition" id="bt_enter_room_recognition" onclick="bt_enter_room_recognition_func()" >방입장</button>
-                      <br>
-                  </div>
-                  <br>
-                  {% if messages %}
-                      {% for message in messages %}
-                          <div class="row" style="text-align:center">
-                          <div class="col-sm-6" style="text-align:center">
-                              <div class="alert alert-danger" style="text-align:center">
-                              <strong>{{ message.tags }}!</strong> {{ message.message }}
-                              </div>
-                          </div>
-                          </div>
-                      {% endfor %}
-                  {% endif %}
-                </form>
-
+        <div class="enter_exam1">
+          <span class="animate__animated animate__rubberBand" id="enter1-text">{{username}}님의 Room으로 입장 준비!</span>
+            <div class="down-arrow2"><img src="/static/assets/images/down-arrow (1).png" alt=""></div>
+            <div class="progress-icon">
+                <img src="/static/assets/images/android (1).png" alt="">
+                <span class="border"></span>
+                <img src="/static/assets/images/face.png" alt="">
+                <span class="border"></span>
+                <img src="/static/assets/images/running.png" alt="">
             </div>
+            <form method="POST"  action ="{%url 'exam2'%}"   enctype="multipart/form-data" >
+              {% csrf_token %}
+              <div class="main-data">
+                <div class="main-camera">
+                  <div class="contentarea">
+                    <div class="camera">
+                      <video id="video" autoplay playsinline>Video stream not available.</video>
+                    </div>
+                    <canvas id="canvas">
+                    </canvas>
+                  </div>
+                  <img id="photo" alt="3초 후 사진 촬영이 됩니다.">
+                </div>
+                <div class="main-input">
+                  <div class="field">
+                    <label for= "member_number" class="labelid">학번 / 수험번호</label>
+                    <input name="member_number" id="member_number"  required autocomplete="off">
+                  </div>
+                  <div class="main-input-name">
+                      <label for= "member_name" class="labelid">이름 </label>
+                      <input name = "member_name"  id="member_name" required required autocomplete="off">
+                  </div>
+                </div>
+              </div>
+              <div class="exam2-btn" id="exam2-btn">
+                <button type="button" id="recapture" name="recapture">재촬영</button>
+                <button type="button" class ="next2" id="bt_enter_room_recognition" onclick="bt_enter_room_recognition_func()" >Next</button>
+              </div>
+              {% if messages %}
+                  {% for message in messages %}
+                      <div class="row" style="text-align:center">
+                      <div class="col-sm-6" style="text-align:center">
+                          <div class="alert alert-danger" style="text-align:center">
+                          <strong>{{ message.tags }}!</strong> {{ message.message }}
+                          </div>
+                      </div>
+                      </div>
+                  {% endfor %}
+              {% endif %}
+            </form>
           </div>
-        </div> 
+          <!-- <button id="capture" name="capture">사진 촬영</button> -->
+        </div>
+      </div>
     </div>
+  </div>
+
+  <div id="lotties" style="position:absolute; top: calc(50vh - 112.5px); left: calc(50vw - 150px); display: none;">
+    <lottie-player src="/static/assets/images/face-scanning.json" background="transparent" style="width: 300px; height: 225px;" speed="1.5" loop autoplay>
+    </lottie-player>
   </div>
 
   <div class="animate__animated animate__slideInRight" id="mypage">
@@ -151,8 +141,6 @@
       </form>
     </div>
 </div>
-
-
 
 <script>
   // 모달 이벤트
@@ -204,20 +192,46 @@
                     'member_number' : member_number.value,
                     'member_name' : member_name.value },
             success: function (data){
-                console.log(data['result']);
                 if (data['result'] == "NO_NAME" || data['result'] == "NO_MEMBER"){
-                    alert("회원정보 실패");
+                  setTimeout(function(){
+                    alert("시험 명단에 포함 되어 있지 않습니다!");
                     return;
+                  },4900)
                 }else if (data['result'] == "NO_IMAGE_MATCH"){
-                    alert("얼굴 확인 실패.");
+                    alert("얼굴 인식에 실패 하였습니다!");
                     return;
                 }else{
-                    alert("얼굴 확인 성공");
+                    alert("얼굴 인식에 성공 하였습니다!");
+                    window.location.href = '/main/enteroom/exam3'
                     return;
                 }
             }
         })
     }
+
+  let lotties_btn = document.getElementById('bt_enter_room_recognition')
+  let lotties = document.getElementById('lotties')
+  let kings = document.getElementById('king')
+  let number = document.getElementById('member_number')
+  let name = document.getElementById('member_name')
+  lotties_btn.addEventListener('click',function(data){
+    console.log("{{result}}")
+    if (number.value && name.value){
+      setTimeout(function(){
+        console.log(number)
+        lotties.style.display='flex'
+        kings.style.opacity = '0.5';
+        kings.style.pointerEvents = 'none';
+      },0)
+      setTimeout(function(){
+        lotties.style.display='none'
+        kings.style.opacity = '1';
+        kings.style.pointerEvents = 'all';
+      },4800)
+    }
+  })
 </script>
+<script src="{% static 'js/capture.js' %}"></script>
+<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 </body>
 </html>
