@@ -109,12 +109,6 @@ def makeroom(request):
 
                 elif study and not(exam):
                     file = "NULL"
-                # makeroom POST 값 저장
-                request.session['room_name'] = room_name
-                # request.session['file'] = file
-                request.session['study'] = study
-                request.session['exam'] = exam
-                request.session['maker'] = maker
 
                 if (len(room_name) > 7):
                     res_data['name_error'] = '방 이름을 생성해 주세요.'
@@ -135,6 +129,7 @@ def makeroom(request):
                         room = Room(room_name=room_name, room_password=room_password,
                                     file=file, mode=mode, maker=maker, member_list = member_list)  # db에 room 정보 저장
                         room.save()
+                        request.session['room_name'] = room_name # 방을 성공적으로 만들면 room_name으로 room_session을 저장
                         return redirect('/main/makeroom/success')
                 # room 정보 비정상 일시
                 return render(request, 'makeroom.html', res_data)
@@ -520,7 +515,7 @@ class RoomList(ListView):
     # context_object_name = "test"
     def get_queryset(self):    # roomlist를 보여줄 queryset 특정
         # session에 저장되어 있는 email과 room의 maker가 같은 것만 queryset에 넣음
-        QuerySet = Room.objects.filter(maker = self.request.session.get('user_email')) 
+        QuerySet = Room.objects.filter(maker = self.request.session.get('user_email')).order_by('-make_date') 
         return QuerySet
 
     # def get_context_data(self):
@@ -533,7 +528,7 @@ class AnalyticsList(ListView):
     model = Analytics
     template_name = 'analyticslist.html'
     def get_queryset(self):   
-        QuerySet = Analytics.objects.filter(email = self.request.session.get('user_email')) 
+        QuerySet = Analytics.objects.filter(email = self.request.session.get('user_email')).order_by('-make_date')
         return QuerySet
 
 def analyticsDetail(request,pk):
@@ -579,7 +574,7 @@ def analyticsDetail(request,pk):
     else:
         return redirect('/login')
 
-def analytics(request):
+def analytics(request):                     # !!!!!!!!!!!!!!!!!!!!!!!!!!!! 모든 단계가 끝나고 room_session 지워야 함
     res_data={}
     fs = FileSystemStorage()
     user_session = request.session.get('user')
