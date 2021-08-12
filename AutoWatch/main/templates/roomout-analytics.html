@@ -55,12 +55,12 @@
         <div class="list-detail-wapper">
           <img src="/static/assets/images/cancel (5).png" alt="" class="cancel" onclick="location.href='/main'">
           <div id="detail-explain" class="animate__animated animate__rubberBand animate__delay-0.8s">
-            <span >{{username}}님의 집중도는 <span style="color: #5f3dc4;">level 3</span> 입니다!</span>
+            <span >{{username}}님의 집중도는 <span style="color: #5f3dc4;">level {{level}}</span> 입니다!</span>
           </div>
           <div class="list-detail">
             <div class="list-detail-text">
               <div class="list-detail-text1">
-                <span class="list-detail-main">해당 룸의 4명중 <span style="color: #5f3dc4;">2등</span> 입니다!</span>
+                <span class="list-detail-main">해당 룸의 {{count}}명중 <span style="color: #5f3dc4;">{{rate}}등</span> 입니다!</span>
               </div>
               <div class="list-detail-text2">
                 <span class="list-detail-sub"> 모든 점수의 최고점은 100점이며, <br> 학습시간의 경우 2시간이 넘으면 동일하게 100점 입니다.</span>

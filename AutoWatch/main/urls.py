@@ -17,8 +17,9 @@ urlpatterns = [
     path('list/room', RoomList.as_view()),
     path('list/analytics',AnalyticsList.as_view()),
     path('list/analytics/<int:pk>',views.analyticsDetail),
-    path('roomout/',views.roomout),
-    path('roomout/analytics',views.analytics),
+    path('roomout/<int:time>/<str:mode>',views.roomout),
+    path('roomout/exam',views.roomoutExam),
+    path('roomout/study',views.analytics),
     path('saveImages/',views.saveImages),
 
     path('app_makeroom', views.app_makeroom),
