@@ -41,7 +41,7 @@ def main(request):
             res_data['img_check'] = 0                      # 이미지 널
         else:
             res_data['img_check'] = 1
-
+             
         if request.method == 'GET':
             return render(request, 'main.html', res_data)
         elif request.method == 'POST':
@@ -214,7 +214,6 @@ def enteroom(request):
                 room_name = request.POST.get('room_name')
                 room_password = request.POST.get('room_password')
 
-                request.session['room_name'] = room_name   # 방 입장하는 순간 room session의 기준은 입장한 방 이름
                 if not(room_name):
                     res_data['name_error'] = 'Room 이름을 입력하세요.'
                 elif not(room_password):
@@ -229,7 +228,8 @@ def enteroom(request):
                         # room이 없는 예외 처리
                         res_data['error'] = '존재하지 않는 Room 입니다.'
                         return render(request, 'enteroom.html', res_data)
-
+                    
+                    request.session['room_name'] = room_name   # 방 입장하는 순간 room session의 기준은 입장한 방 이름
                     db_password = room.room_password
                     if db_password == room_password:     # room 정상 입장
                         if room.mode == "EXAM":
@@ -390,7 +390,15 @@ def exam3(request):
         if request.method == 'GET':
             return render(request,'enter_exam3.html',res_data)
         elif request.method == 'POST':
-            return  render(request,'ssimong.html',res_data)
+            room_session = request.session.get('room_name')
+            room = Room.objects.get(room_name=room_session)
+            roomname = room.room_name
+            useremail = user.email
+            roomowner = room.maker
+            nickname = user.username
+            roomtype = room.mode
+            url = 'https://cranky-bohr-e0f18a.netlify.app/'+roomname+'/'+useremail+'/'+roomowner+'/'+nickname+'/'+roomtype
+            return redirect (url)
     else:
         return redirect('/login')
 
@@ -427,7 +435,6 @@ def study2(request):
     fs = FileSystemStorage()
     user_session = request.session.get('user')
     res_data['session'] = user_session
-    print("!!!!!!!!!!!!!",user_session)
     if user_session:
         user = User.objects.get(pk=user_session)    # 로그인 체크
         res_data['username'] = user.username        # mypage 정보
@@ -443,21 +450,30 @@ def study2(request):
         if request.method == 'GET':
             return render(request,'enter_study2.html',res_data)
         elif request.method == 'POST':
-            post_type = request.POST.get('enterRoom')
-            if post_type == 'toSsimong':   # 준영으로 넘어가는 나의 POST
-                return  render(request,'ssimong.html',res_data)
-            else:   #  준영이 나에게 요청하는 POST
+            room_session = request.session.get('room_name')
+            room = Room.objects.get(room_name=room_session)
+            roomname = room.room_name
+            useremail = user.email
+            roomowner = room.maker
+            nickname = user.username
+            roomtype = room.mode
+            url = 'https://cranky-bohr-e0f18a.netlify.app/'+roomname+'/'+useremail+'/'+roomowner+'/'+nickname+'/'+roomtype
+            return redirect (url)
+            # post_type = request.POST.get('enterRoom')
+            # if post_type == 'toSsimong':   # 준영으로 넘어가는 나의 POST
+            #     return  render(request,'ssimong.html',res_data)
+            # else:   #  준영이 나에게 요청하는 POST
 
-                # 준영에게 넘겨줄 data
-                room_session = request.session.get('room_name')
-                room = Room.objects.get(room_name=room_session)
-                room_data = {}
-                room_data['roomname'] = room.room_name
-                room_data['useremail'] = user.email
-                room_data['nickname'] = user.username
-                room_data['roomowner'] = room.maker
-                room_data['roomtype'] = room.mode
-                return HttpResponse(simplejson.dumps(room_data))
+            #     # 준영에게 넘겨줄 data
+            #     room_session = request.session.get('room_name')
+            #     room = Room.objects.get(room_name=room_session)
+            #     room_data = {}
+            #     room_data['roomname'] = room.room_name
+            #     room_data['useremail'] = user.email
+            #     room_data['nickname'] = user.username
+            #     room_data['roomowner'] = room.maker
+            #     room_data['roomtype'] = room.mode
+            #     return HttpResponse(simplejson.dumps(room_data))
     else:
         return redirect('/login')
 
@@ -534,7 +550,6 @@ class AnalyticsList(ListView):
 def analyticsDetail(request,pk):
     print("!!!!!!!!!!!!!!!!!!!!",pk)
     analytics = Analytics.objects.get(pk=pk)
-    print("!!!!!!!!!!!!!!!!!!!!",analytics.app,analytics.person)
     res_data={}
     fs = FileSystemStorage()
     user_session = request.session.get('user')
@@ -567,6 +582,10 @@ def analyticsDetail(request,pk):
 
         column2D = FusionCharts("column2d", "myFirstChart", "500", "400", "chart-1", "json", dataSource)
         res_data['output'] = column2D.render()
+
+        # res_data['count'] = analytics.count
+        # res_data['rate'] = analytics.rate
+        # res_data['level'] = analytics.level
         if request.method == 'GET':
             return render(request,'list-analytics.html',res_data)
         elif request.method == 'POST':
@@ -590,26 +609,72 @@ def analytics(request):                     # !!!!!!!!!!!!!!!!!!!!!!!!!!!! 모�
         else:
             res_data['img_check'] = 1
 
-        analytics = Analytics.objects.filter(email=user.email).last()
-        dataSource = OrderedDict()
-        dataSource["data"] = [] #chartdata는 json형식이다.
-        dataSource["data"].append({"label": '앱 차단', "value": analytics.app})
-        dataSource["data"].append({"label": '자리이탈', "value": analytics.person})
-        dataSource["data"].append({"label": '학습시간', "value": analytics.time})
-
-        chartConfig = OrderedDict()
-        chartConfig["caption"] = "집중도 통계"  
-        chartConfig["numberSuffix"] = "점" #y축 숫자단위
-        chartConfig["theme"] = "fusion" #테마
-
-        dataSource["chart"] = chartConfig # 그래프 특징 설정
-
-        column2D = FusionCharts("column2d", "myFirstChart", "500", "400", "chart-1", "json", dataSource)
-        res_data['output'] = column2D.render()            
         if request.method == 'GET':
             return render(request,'roomout-analytics.html',res_data)
-        elif request.method == 'POST':
+        elif request.method == 'POST':  # 집중도에 사용할 데이터 받는 POST
 
+            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!지우지 마세요
+            #1. 집중도 레벨
+            # appPoint = 몇점 , personPoin = 몇점 , timePoint = 몇점
+            # if(appPoint + pesonPoint + timePoint <= 299)
+            #   level = 10
+            # elif (appPoint + pesonPoint + timePoint <= 270 && appPoint + pesonPoint + timePoint < 299)
+            #   level = 9
+            # elif (appPoint + pesonPoint + timePoint <= 240 && appPoint + pesonPoint + timePoint < 270)
+            #   level = 8
+            # elif (appPoint + pesonPoint + timePoint <= 210 && appPoint + pesonPoint + timePoint < 240)
+            #   level = 7
+            # elif (appPoint + pesonPoint + timePoint <= 180 && appPoint + pesonPoint + timePoint < 210)
+            #   level = 6
+            # elif (appPoint + pesonPoint + timePoint <= 150 && appPoint + pesonPoint + timePoint < 180)
+            #   level = 5
+            # elif (appPoint + pesonPoint + timePoint <= 120 && appPoint + pesonPoint + timePoint < 150)
+            #   level = 4
+            # elif (appPoint + pesonPoint + timePoint <= 90 && appPoint + pesonPoint + timePoint < 120)
+            #   level = 3
+            # elif (appPoint + pesonPoint + timePoint <= 60 && appPoint + pesonPoint + timePoint < 90)
+            #   level = 2
+            # elif (appPoint + pesonPoint + timePoint < 60 )
+            #   level = 1
+            # else
+            #   에러입니다.
+            # room_name = request.session.get('room_name')
+            # analytics = Analytics(room_name = room_name, email = user.email, grade = level, app = appPoint, person = personPoint = time = timePoint)
+            # analytics.save()
+
+            #2. 등수  (모두 다 나왔을때, 나오지 않았을때 고려 해야함)
+            # analytic = Analytics.object.filter('room_name = room_name').order_by('-level')  세션에 있는 room_name과 같은 통계 자료를 가져옴
+            # num = 0
+            # for x in analytic:
+            #     if x.email == user.email:
+            #         x.rate = num + 1
+            #         x.save()
+            #         print(x.rate)
+            #     else:
+            #         num = num+1
+        
+            # dataSource = OrderedDict()
+            # dataSource["data"] = [] #chartdata는 json형식이다.
+            # dataSource["data"].append({"label": '앱 차단', "value": appPoint})
+            # dataSource["data"].append({"label": '자리이탈', "value": personPoint})
+            # dataSource["data"].append({"label": '학습시간', "value": timePoint})
+
+            # chartConfig = OrderedDict()
+            # chartConfig["caption"] = "집중도 통계"  
+            # chartConfig["numberSuffix"] = "점" #y축 숫자단위
+            # chartConfig["theme"] = "fusion" #테마
+
+            # dataSource["chart"] = chartConfig # 그래프 특징 설정
+
+            # column2D = FusionCharts("column2d", "myFirstChart", "500", "400", "chart-1", "json", dataSource)
+            # res_data['output'] = column2D.render() 
+
+            # analytics = Analytics.object.fillter(email = user.name).last()
+            # res_data['count'] = Analytics.object.filter(room_name = room_name).count()
+            # analytic.count = res_data['count']
+            # analytic.save()
+            # res_data['rate'] = analytics.rate
+            # res_data['level'] = analytics.level
             return  render(request,'roomout-analytics.html',res_data)
     else:
         return redirect('/login')

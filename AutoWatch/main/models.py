@@ -19,7 +19,10 @@ class Room(models.Model):
 
 class Analytics(models.Model):
     room_name = models.CharField(max_length=128, verbose_name="방 이름", default="NULL")   
-    email = models.EmailField(max_length=128, verbose_name="아이디",default="NULL")
+    email = models.EmailField(max_length=128, verbose_name="사용자",default="NULL")
+    count =  models.IntegerField(verbose_name="사용자 수", default=0)
+    rate = models.IntegerField(verbose_name="순위", default=0)
+    level = models.IntegerField(verbose_name="집중도 레벨",default=0)
     app = models.IntegerField(verbose_name="앱 차단 점수")    
     person = models.IntegerField(verbose_name="자리 이탈 점수")
     time = models.IntegerField(verbose_name="학습 시간")
