@@ -1,3 +1,4 @@
+from django.conf.urls import url
 from django.http.response import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.hashers import make_password, check_password
@@ -76,6 +77,9 @@ def logout(request):
     if request.session.get('user'):
         del(request.session['user'])
     return redirect('/')
+
+
+
 
 
 @method_decorator(csrf_exempt, name='dispatch')

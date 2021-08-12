@@ -501,30 +501,6 @@ def mylist(request):
     else:
         return redirect('/login')
 
-
-# def room(request):
-#     res_data={}
-#     fs = FileSystemStorage()
-#     user_session = request.session.get('user')
-#     if user_session:
-#         user = User.objects.get(pk=user_session)    # 로그인 체크
-#         res_data['username'] = user.username        # mypage 정보
-#         res_data['email'] = user.email
-#         res_data['register'] = user.registerd_date
-#         res_data['userimg'] = fs.url(user.image)
-
-#         if res_data['userimg'] == "/media/":               # 이미지 체크
-#             res_data['img_check'] = 0
-#         else:
-#             res_data['img_check'] = 1
-
-#         if request.method == 'GET':
-#             return render(request,'roomlist.html',res_data)
-#         elif request.method == 'POST':
-#             return  render(request,'roomlist,html',res_data)
-#     else:
-#         return redirect('/login')
-        
 class RoomList(ListView):
     model = Room
     template_name = 'roomlist.html'
@@ -533,12 +509,6 @@ class RoomList(ListView):
         # session에 저장되어 있는 email과 room의 maker가 같은 것만 queryset에 넣음
         QuerySet = Room.objects.filter(maker = self.request.session.get('user_email')).order_by('-make_date') 
         return QuerySet
-
-    # def get_context_data(self):
-    #     user = User.objects.get(pk= self.request.session.get('user'))                  
-    #     res_data = {}
-    #     res_data['username']= user.username
-    #     return res_data
 
 class AnalyticsList(ListView):
     model = Analytics
@@ -609,6 +579,31 @@ def analytics(request):                     # !!!!!!!!!!!!!!!!!!!!!!!!!!!! 모�
         else:
             res_data['img_check'] = 1
 
+
+        # 임시로 그래프 그림!!!!!!!!!!!!!!!
+        analytics = Analytics.objects.filter(email = user.email).last()
+        dataSource = OrderedDict()
+        dataSource["data"] = [] #chartdata는 json형식이다.
+        dataSource["data"].append({"label": '앱 차단', "value": analytics.app})
+        dataSource["data"].append({"label": '자리이탈', "value": analytics.person})
+        dataSource["data"].append({"label": '학습 시간', "value": analytics.time})
+
+        chartConfig = OrderedDict()
+        chartConfig["caption"] = "집중도 통계"              
+        chartConfig["yAxisName"] = "점수"
+        chartConfig["numberSuffix"] = "점" #y축 숫자단위
+        chartConfig["theme"] = "fusion" #테마
+
+        dataSource["chart"] = chartConfig # 그래프 특징 설정
+
+        column2D = FusionCharts("column2d", "myFirstChart", "500", "400", "chart-1", "json", dataSource)
+        res_data['output'] = column2D.render()
+        res_data['rate'] = analytics.rate
+        res_data['level'] = analytics.level
+        res_data['count'] = Analytics.objects.filter(room_name = request.session.get('room_name')).count()
+        # 임시로 그래프 그림!!!!!!!!!!!!!!!
+
+
         if request.method == 'GET':
             return render(request,'roomout-analytics.html',res_data)
         elif request.method == 'POST':  # 집중도에 사용할 데이터 받는 POST
@@ -669,8 +664,8 @@ def analytics(request):                     # !!!!!!!!!!!!!!!!!!!!!!!!!!!! 모�
             # column2D = FusionCharts("column2d", "myFirstChart", "500", "400", "chart-1", "json", dataSource)
             # res_data['output'] = column2D.render() 
 
-            # analytics = Analytics.object.fillter(email = user.name).last()
-            # res_data['count'] = Analytics.object.filter(room_name = room_name).count()
+            # analytics = Analytics.objects.fillter(email = user.name).last()
+            # res_data['count'] = Analytics.objects.filter(room_name = room_name).count()
             # analytic.count = res_data['count']
             # analytic.save()
             # res_data['rate'] = analytics.rate
@@ -701,7 +696,68 @@ def saveImages(request):
 
 
 
-def roomout(request):
+def roomout(request,time,mode):
+    res_data={}
+    fs = FileSystemStorage()
+    user_session = request.session.get('user')
+    room_name_session = request.session.get('room_name')
+    room = Room.objects.get(room_name = room_name_session)
+    if user_session:
+        user = User.objects.get(pk=user_session)    # 로그인 체크
+        res_data['username'] = user.username        # mypage 정보
+        res_data['email'] = user.email
+        res_data['register'] = user.registerd_date
+        res_data['userimg'] = fs.url(user.image)
+
+        
+        if res_data['userimg'] == "/media/":               # 이미지 체크
+            res_data['img_check'] = 0
+        else:
+            res_data['img_check'] = 1
+
+        
+        output = ''
+        if mode == 'EXAM':
+            if request.method == 'GET':
+                return render(request,'roomout.html',res_data)
+            elif request.method == 'POST':
+                return render(request,'roomout-exam.html',res_data)
+        elif mode == 'STUDY':
+            analytics = Analytics.objects.filter(room_name = request.session.get('room_name'))
+            if analytics: # 해당 룸의 row가 있다.
+                for x in analytics:
+                    if(x.email == user.email):   # 해당 룸의 내 email을 가진 row가 있다.
+                        output = 'YES'
+                    else:
+                        output = 'NO'
+            elif not(analytics): # 해당 룸의 row가 없다 -> 내가 제일 처음 -> 바로 생성
+                analytics = Analytics(room_name =  request.session.get('room_name'), email = user.email,time=time)
+                analytics.save()
+
+            if output == 'YES': # 해당 룸의 row 중에 내 아이디의 row가 있다.
+                analytics = Analytics.objects.filter(email = user.email).last()
+                analytics.time = time
+                analytics.save()
+            elif output == 'NO': # 해당 룸의 row 중에 내 아이디의 row가 없다.
+                analytics = Analytics(room_name =  request.session.get('room_name'), email = user.email,time=time)
+                analytics.save()
+
+
+            user = User.objects.get(email = room.maker)
+            res_data['maker_name'] = user.username
+
+            if request.method == 'GET':
+                return render(request,'roomout.html',res_data)
+            elif request.method == 'POST':
+                if user.check== False:
+                    return redirect('/main/roomout/study')
+                else:
+                    res_data['check'] = "차단이 완료되지 않았습니다."
+                    return render(request,'roomout.html',res_data)
+    else:
+        return redirect('/login')
+
+def roomoutExam(request):
     res_data={}
     fs = FileSystemStorage()
     user_session = request.session.get('user')

@@ -23,9 +23,9 @@ class Analytics(models.Model):
     count =  models.IntegerField(verbose_name="사용자 수", default=0)
     rate = models.IntegerField(verbose_name="순위", default=0)
     level = models.IntegerField(verbose_name="집중도 레벨",default=0)
-    app = models.IntegerField(verbose_name="앱 차단 점수")    
-    person = models.IntegerField(verbose_name="자리 이탈 점수")
-    time = models.IntegerField(verbose_name="학습 시간")
+    app = models.IntegerField(verbose_name="앱 차단 점수",default=0)    
+    person = models.IntegerField(verbose_name="자리 이탈 점수",default=0)
+    time = models.IntegerField(verbose_name="학습 시간",default=0)
     make_date = models.DateTimeField(auto_now_add=True, verbose_name='생성 날짜')
     def __str__(self):
         return self.email
