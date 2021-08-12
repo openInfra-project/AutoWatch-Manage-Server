@@ -46,7 +46,7 @@
 
       setTimeout(function(){  // 캡쳐 시간
         takepicture()
-    }, 5000);
+    }, 4000);
     }
 
     function restartup() {   // 재촬영 함수
@@ -88,7 +88,7 @@
   
         setTimeout(function(){  // 캡쳐 시간
           retakepicture()
-      }, 5000);
+      }, 4000);
   
   //      clearphoto();
         
