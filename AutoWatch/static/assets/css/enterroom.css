@@ -241,7 +241,9 @@
         background-color: #33ccc5;
         border-bottom: 3px solid #4771cb!important;
     }
-
+    .main-input{
+        display: none;
+    }
     .main-input label{
         font-size: large;
         font-weight: 600;

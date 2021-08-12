@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="/static/assets/css/templatemo-seo-dream.css?after">
     <link rel="stylesheet" href="/static/assets/css/main.css">
     <link rel="stylesheet" href="/static/assets/css/makeroom.css">
-    <link rel="stylesheet" href="/static/assets/css/enterroom.css?after?after?after">
+    <link rel="stylesheet" href="/static/assets/css/enterroom.css?after?after?after?after">
     <link rel="stylesheet" href="/static/assets/css/list.css">
     <link rel="stylesheet" href="/static/assets/css/animated.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
@@ -76,7 +76,11 @@
                   </div>
                   <img id="photo" alt="3초 후 사진이 촬영 됩니다.">
                 </div>
-                <div class="main-input">
+                <div id="count" class="count" style="margin-bottom: 30px;">
+                  <lottie-player src="/static/assets/images/count.json" background="transparent" style="width: 300px; height: 225px;" speed="0.7" loop autoplay>
+                  </lottie-player>
+                </div>
+                <div class="main-input" id="main-input">
                   <div class="field">
                     <label for= "member_number" class="labelid">학번 / 수험번호</label>
                     <input name="member_number" id="member_number"  required autocomplete="off">
@@ -196,7 +200,7 @@
                   setTimeout(function(){
                     alert("시험 명단에 포함 되어 있지 않습니다!");
                     return;
-                  },4600)
+                  },4900)
                 }else if (data['result'] == "NO_IMAGE_MATCH"){
                     alert("얼굴 인식에 실패 하였습니다!");
                     return;
@@ -215,20 +219,41 @@
   let number = document.getElementById('member_number')
   let name = document.getElementById('member_name')
   lotties_btn.addEventListener('click',function(data){
-    console.log("{{result}}")
     if (number.value && name.value){
       setTimeout(function(){
         console.log(number)
         lotties.style.display='flex'
-        kings.style.opacity = '0.5';
+        kings.style.opacity = '0.7';
         kings.style.pointerEvents = 'none';
       },0)
       setTimeout(function(){
         lotties.style.display='none'
         kings.style.opacity = '1';
         kings.style.pointerEvents = 'all';
-      },4500)
+      },4800)
     }
+  })
+</script>
+<script>
+  let input = document.getElementById('main-input')
+  let count = document.getElementById('count')
+  window.addEventListener('load',function(){
+    setTimeout(function(){
+      count.style.display = 'none'
+      input.style.display = 'inline-block'
+    },4300)
+  })
+
+  let recapture = document.getElementById('recapture')
+  recapture.addEventListener('click',function(){
+    setTimeout(function(){
+      count.style.display = 'flex'
+      input.style.display = 'none'
+    },0)
+    setTimeout(function(){
+      count.style.display = 'none'
+      input.style.display = 'inline-block'
+    },4300)
   })
 </script>
 <script src="{% static 'js/capture.js' %}"></script>
