@@ -1,0 +1,11 @@
+            # analytic = Analytics.object.filter('room_name = room_name').order_by('-level')  세션에 있는 room_name과 같은 통계 자료를 가져옴
+            # num = 0
+            # for x in analytic:
+            #     if x.email == user.email:
+            #         x.rate = num + 1
+            #         x.save()
+            #         print(x.rate)
+            #     else:
+            #         num = num+1
+
+등수 저장 알고리즘
