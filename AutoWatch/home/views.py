@@ -95,13 +95,13 @@ def app_signup(request):
         name = request.POST.get('name', None)
         print(email)
         if User.objects.filter(email=email).exists():
-            return HttpResponse(simplejson.dumps({"email": email, "password": password, "name": "Fail"}))
+            return HttpResponse(simplejson.dumps({"email": email, "password": password, "name": "Fail", "image": "Fail"}))
 
         else:
             user = User(email=email, password=make_password(
                 password), username=name)
             user.save()
-            return HttpResponse(simplejson.dumps({"email": email, "password": password, "name": name}))
+            return HttpResponse(simplejson.dumps({"email": email, "password": password, "name": name, "image": str(user.image)}))
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -119,12 +119,12 @@ def app_login(request):
             if check_password(password, myuser.password):
                 # 세션도 딕셔너리 변수 사용과 똑같이 사용하면 된다.
                 # 세션 user라는 key에 방금 로그인한 id를 저장한것.
-                return HttpResponse(simplejson.dumps({"email": email, "password": password, "name": myuser.username}))
+                return HttpResponse(simplejson.dumps({"email": email, "password": password, "name": myuser.username, "image": str(myuser.image)}))
             else:
-                return HttpResponse(simplejson.dumps({"email": email, "password": password, "name": "Fail"}))
+                return HttpResponse(simplejson.dumps({"email": email, "password": password, "name": "Fail", "image": "Fail"}))
 
         else:
-            return HttpResponse(simplejson.dumps({"email": "aa", "password": "aa", "name": "Fail"}))
+            return HttpResponse(simplejson.dumps({"email": "aa", "password": "aa", "name": "Fail", "image": "Fail"}))
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -151,7 +151,8 @@ def app_image(request):
         myuser = User.objects.get(email=a)
         myuser.image = image
         myuser.save()
-        return HttpResponse(simplejson.dumps({"image": "ok"}))  # 이미지 변경완료
+        # 이미지 변경완료
+        return HttpResponse(simplejson.dumps({"image": str(myuser.image)}))
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -184,7 +185,7 @@ def app_mypage(request):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-def app_check(request):
+def app_checkin(request):
     if request.method == "POST":
         email = request.POST.get('email', None)
         print(email)
@@ -193,6 +194,21 @@ def app_check(request):
         myuser.save()
 
         return HttpResponse(simplejson.dumps({"roomname": "yes"}))
+
+
+# exam모드시 방 나가기
+@method_decorator(csrf_exempt, name='dispatch')
+def app_checkout(request):
+    if request.method == "POST":
+        email = request.POST.get('email', None)
+        print(email)
+        myuser = User.objects.get(email=email)
+        myuser.check = False
+        myuser.save()
+
+        return HttpResponse(simplejson.dumps({"roomname": "yes"}))
+
+# study모드시 방나가기
 
 
 @method_decorator(csrf_exempt, name='dispatch')
