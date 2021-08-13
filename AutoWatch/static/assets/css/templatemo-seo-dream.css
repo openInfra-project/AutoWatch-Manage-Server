@@ -110,13 +110,18 @@ a {
   text-decoration: none;
 }
 
-p {
+p{
   font-size: 15px;
   line-height: 30px;
   color: #2a2a2a;
 }
-img {
-  width: 100%;
+#outline-div{
+  display: flex;
+  justify-content: center;
+}
+#outline-div img {
+  width: 95%;
+  height: 92%;
   overflow: hidden;
 }
 /* 
