@@ -17,8 +17,8 @@ urlpatterns = [
     path('app_delete', views.app_delete),
     path('app_mypage', views.app_mypage),
     path('app_modify', views.app_modify),
-    path('app_check', views.app_check),
+    path('app_checkin', views.app_checkin),
+    path('app_checkout', views.app_checkout),
     path('app_sendcount', views.app_sendcount)
-
 
 ]

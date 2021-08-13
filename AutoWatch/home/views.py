@@ -8,9 +8,8 @@ from django.core.files.storage import FileSystemStorage
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.utils.datetime_safe import datetime
-
+from main.models import Analytics
 # 회원가입
-global count
 
 
 def home(request):
@@ -79,9 +78,6 @@ def logout(request):
     return redirect('/')
 
 
-
-
-
 @method_decorator(csrf_exempt, name='dispatch')
 def app_signup(request):
     # 앱 에서 오는 POST 요청
@@ -95,13 +91,13 @@ def app_signup(request):
         name = request.POST.get('name', None)
         print(email)
         if User.objects.filter(email=email).exists():
-            return HttpResponse(simplejson.dumps({"email": email, "password": password, "name": "Fail"}))
+            return HttpResponse(simplejson.dumps({"email": email, "password": password, "name": "Fail", "image": "Fail"}))
 
         else:
             user = User(email=email, password=make_password(
                 password), username=name)
             user.save()
-            return HttpResponse(simplejson.dumps({"email": email, "password": password, "name": name}))
+            return HttpResponse(simplejson.dumps({"email": email, "password": password, "name": name, "image": str(user.image)}))
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -119,12 +115,12 @@ def app_login(request):
             if check_password(password, myuser.password):
                 # 세션도 딕셔너리 변수 사용과 똑같이 사용하면 된다.
                 # 세션 user라는 key에 방금 로그인한 id를 저장한것.
-                return HttpResponse(simplejson.dumps({"email": email, "password": password, "name": myuser.username}))
+                return HttpResponse(simplejson.dumps({"email": email, "password": password, "name": myuser.username, "image": str(myuser.image)}))
             else:
-                return HttpResponse(simplejson.dumps({"email": email, "password": password, "name": "Fail"}))
+                return HttpResponse(simplejson.dumps({"email": email, "password": password, "name": "Fail", "image": "Fail"}))
 
         else:
-            return HttpResponse(simplejson.dumps({"email": "aa", "password": "aa", "name": "Fail"}))
+            return HttpResponse(simplejson.dumps({"email": "aa", "password": "aa", "name": "Fail", "image": "Fail"}))
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -151,7 +147,7 @@ def app_image(request):
         myuser = User.objects.get(email=a)
         myuser.image = image
         myuser.save()
-        return HttpResponse(simplejson.dumps({"image": "ok"}))  # 이미지 변경완료
+        return HttpResponse(simplejson.dumps({"image": str(myuser.image)}))
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -184,7 +180,7 @@ def app_mypage(request):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-def app_check(request):
+def app_checkin(request):
     if request.method == "POST":
         email = request.POST.get('email', None)
         print(email)
@@ -194,6 +190,22 @@ def app_check(request):
 
         return HttpResponse(simplejson.dumps({"roomname": "yes"}))
 
+# exam모드시 방 나가기
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+def app_checkout(request):
+    if request.method == "POST":
+        email = request.POST.get('email', None)
+        print(email)
+        myuser = User.objects.get(email=email)
+        myuser.check = False
+        myuser.save()
+
+        return HttpResponse(simplejson.dumps({"roomname": "yes"}))
+
+# study모드시 방나가기
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 def app_sendcount(request):
@@ -201,10 +213,37 @@ def app_sendcount(request):
         email = request.POST.get('email', None)
         count = request.POST.get('count', None)  # 앱 접근횟수
         nonperson = request.POST.get('nonperson', None)  # 자리이탈횟수
+        roomname = request.POST.get('roomname', None)
         print(count)
+        count_point = int(100) - (int(count)*10)
+        nonperson_point = int(100)-(int(nonperson)*5)
+        output = ''
         print(nonperson)
+        print(roomname)
         myuser = User.objects.get(email=email)
         myuser.check = False
         myuser.save()
+
+        analytics = Analytics.objects.filter(room_name=roomname)
+        if analytics:  # 해당 룸의 row가 있다.
+            for x in analytics:
+                if(x.email == myuser.email):   # 해당 룸의 내 email을 가진 row가 있다.
+                    output = 'YES'
+                else:
+                    output = 'NO'
+        elif not(analytics):  # 해당 룸의 row가 없다 -> 내가 제일 처음 -> 바로 생성
+            analytics = Analytics(
+                room_name=roomname, email=email, person=nonperson_point, app=count_point)
+            analytics.save()
+
+        if output == 'YES':  # 해당 룸의 row 중에 내 아이디의 row가 있다.
+            analytics = Analytics.objects.filter(email=email).last()
+            analytics.person = nonperson_point
+            analytics.app = count_point
+            analytics.save()
+        elif output == 'NO':  # 해당 룸의 row 중에 내 아이디의 row가 없다.
+            analytics = Analytics(
+                room_name=roomname, email=email, person=nonperson_point, app=count_point)
+            analytics.save()
 
         return HttpResponse(simplejson.dumps({"roomname": "yes"}))
