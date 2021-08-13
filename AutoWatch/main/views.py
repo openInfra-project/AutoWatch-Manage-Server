@@ -611,28 +611,71 @@ def analytics(request):                     # !!!!!!!!!!!!!!!!!!!!!!!!!!!! 모�
         else:
             res_data['img_check'] = 1
 
-
-
+        # level 판별
         analytics = Analytics.objects.filter(email = user.email).last()
+        level = analytics.level
+        appPoint = analytics.app
+        personPoint = analytics.person
+        timePoint = analytics.time
+        if (appPoint + personPoint + timePoint <= 299):
+            level = 10
+        elif (appPoint + personPoint + timePoint <= 270 and appPoint + personPoint + timePoint < 299):
+            level = 9
+        elif (appPoint + personPoint + timePoint <= 240 and appPoint + personPoint + timePoint < 270):
+            level = 8
+        elif (appPoint + personPoint + timePoint <= 210 and appPoint + personPoint + timePoint < 240):
+            level = 7
+        elif (appPoint + personPoint + timePoint <= 180 and appPoint + personPoint + timePoint < 210):
+            level = 6
+        elif (appPoint + personPoint + timePoint <= 150 and appPoint + personPoint + timePoint < 180):
+            level = 5
+        elif (appPoint + personPoint + timePoint <= 120 and appPoint + personPoint + timePoint < 150):
+            level = 4
+        elif (appPoint + personPoint + timePoint <= 90 and appPoint + personPoint + timePoint < 120):
+            level = 3
+        elif (appPoint + personPoint + timePoint <= 60 and appPoint + personPoint + timePoint < 90):
+            level = 2
+        elif (appPoint + personPoint + timePoint < 60 ):
+            level = 1
+        else:
+            level = 0
 
-        #chartdata 선언
+        analytics.level = level
+        analytics.save()
+
+
+        # 2. rate 판별  (모두 다 나왔을때, 나오지 않았을때 고려 해야함)
+        room_name = request.session.get('room_name')
+        analytic = Analytics.objects.filter(room_name = room_name).order_by('-level')  #세션에 있는 room_name과 같은 통계 자료를 가져옴
+        num = 0
+        for x in analytic:
+            if x.email == user.email:
+                x.rate = num + 1
+                x.save()
+                print(x.rate)
+            else:
+                num = num+1
+    
         dataSource = OrderedDict()
         dataSource["data"] = [] #chartdata는 json형식이다.
-        dataSource["data"].append({"label": '앱 차단', "value": analytics.app})
-        dataSource["data"].append({"label": '자리이탈', "value": analytics.person})
-        dataSource["data"].append({"label": '학습 시간', "value": analytics.time})
+        dataSource["data"].append({"label": '앱 차단', "value": appPoint})
+        dataSource["data"].append({"label": '자리이탈', "value": personPoint})
+        dataSource["data"].append({"label": '학습시간', "value": timePoint})
 
         chartConfig = OrderedDict()
-        chartConfig["caption"] = "집중도 통계"                #!!!!!!!!!!!!!!!!!!집중도 레벨 판별 해야함
+        chartConfig["caption"] = "집중도 통계"  
         chartConfig["numberSuffix"] = "점" #y축 숫자단위
         chartConfig["theme"] = "fusion" #테마
 
         dataSource["chart"] = chartConfig # 그래프 특징 설정
 
         column2D = FusionCharts("column2d", "myFirstChart", "500", "400", "chart-1", "json", dataSource)
-        res_data['output'] = column2D.render()
+        res_data['output'] = column2D.render() 
 
-        res_data['count'] = analytics.count
+        analytics = Analytics.object.fillter(email = user.name).last()
+        res_data['count'] = Analytics.object.filter(room_name = room_name).count()
+        analytics.count = res_data['count']
+        analytics.save()
         res_data['rate'] = analytics.rate
         res_data['level'] = analytics.level
 
@@ -848,14 +891,29 @@ def app_makeroom(request):
         myname = request.POST.get('name')
         mypass = request.POST.get('pass')
         mycheckbox = request.POST.get('checkbox')
+        fs = FileSystemStorage()
+        filename = fs.save(myfile.name, myfile)
+        print(filename)
+
+        member_list = []
+        # myuser = Room(room_name=myname, room_password=mypass,
+        #               maker=myadmin, mode=mycheckbox, member_list=member_list)
+        # myuser.file = myfile
+        # myuser.save()
+        member = load_workbook("media/" + myfile.name)
+        print(member)
+        for cell in member['Sheet1']['A']:
+            member_list.append(cell.value)
+        print(member_list)
+        myuser = Room(room_name=myname, room_password=mypass,
+                      maker=myadmin, mode=mycheckbox, member_list=member_list)
+        myuser.file = myfile
+        os.remove(os.path.join(settings.MEDIA_ROOT, myfile.name))
+        myuser.save()
         print(myemail)
         print(myname)
         print(mypass)
         print(mycheckbox)
-        myuser = Room(room_name=myname, room_password=mypass,
-                      maker=myadmin, mode=mycheckbox)
-        myuser.file = myfile
-        myuser.save()
 
         # test = json.loads(request.body)
         # myemail = test.get('admin')  # 아이디(이멜)
@@ -885,8 +943,9 @@ def app_makemyroom(request):
         roomname = request.POST.get('roomname')
         password = request.POST.get('password')
         mycheckbox = request.POST.get('checkbox')
+        member_list = []
         myuser = Room(room_name=roomname, room_password=password,
-                      maker=myadmin, mode=mycheckbox)
+                      maker=myadmin, mode=mycheckbox, member_list=member_list)
         myuser.save()
         print(myuser)
         return HttpResponse(simplejson.dumps({"roomname": roomname, "password": password}))
@@ -959,7 +1018,7 @@ def app_entermyroom(request):
             return HttpResponse(simplejson.dumps({"roomname": room_type}))
 
 
-## EXAM 방
+# EXAM 방
 
 # 이미지 비교해야함
 
@@ -967,18 +1026,17 @@ def app_entermyroom(request):
 def app_images(request):
     if request.method == "POST":
         # APP : 캡쳐이미지 받기
-        image = request.FILES['image']
-        print(image)
+        capture_image = request.FILES['image']
+        print(capture_image)
         # image.name = <room_name>_<member_number>_capture.png
         fs = FileSystemStorage()
-        filename = fs.save("capture/"+image.name, image)
+        filename = fs.save("capture/"+capture_image.name, capture_image)
         uploaded_file_url = fs.url(filename)
         print(filename)
         print(uploaded_file_url)
 
-
         # image.name 에서 분리
-        l = image.name.split('_')
+        l = capture_image.name.split('_')
         room_name = l[0]
         member_index = l[1]
 
@@ -986,8 +1044,8 @@ def app_images(request):
 
         # Room DB - excel 파일
         room = Room.objects.get(room_name=room_name)
-        member_file=room.file #명단
-        member = load_workbook("media/room/" + str(member_file))
+        member_file = room.file  # 명단
+        member = load_workbook("media/" + str(member_file))
         sheet = member['Sheet1']
 
         # exel 명단 속 이미지
@@ -998,66 +1056,67 @@ def app_images(request):
         fs = FileSystemStorage()
 
         # Face Recognition
-        a=(fs.location +str("\capture/")+ member_file_image_path)
-        b=(fs.location +str("\capture/")+ image.name )
+        a = (fs.location + str("\capture/") + member_file_image_path)
+        b = (fs.location + str("\capture/") + capture_image.name)
         # luxand API
         luxand_client = luxand("12a42a8efedf4e24b84730ce440e5429")
-        member_file_image = luxand_client.add_person(str(member_index), photos=[a])
+        member_file_image = luxand_client.add_person(
+            str(member_index), photos=[a])
         result = luxand_client.verify(member_file_image, photo=b)
         print(result)
-
+        os.remove(os.path.join(settings.MEDIA_ROOT +
+                               "/capture/", capture_image.name))
         # Recognition RESULT
-        if result['status']=='success':            
+        if result['status'] == 'success':
             print("Recognition_SUCCESS")
             return HttpResponse(simplejson.dumps({"image": "ok"}))  # 이미지 전송완료
         else:
             print("Recognition_FAIL")
             return HttpResponse(simplejson.dumps({"image": "no"}))  # 이미지 전송실패
 
-        
-
 # EXAM방 입장시 학번,이름 매칭확인
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 def app_checkmyinfo(request):
     if request.method == "POST":
-        info={}
+        info = {}
         # change_here
         room_name = request.POST.get('room', None)
-        member_name  = request.POST.get('name', None)
-        member_number  = request.POST.get('number', None)
+        member_name = request.POST.get('name', None)
+        member_number = request.POST.get('number', None)
 
         # room DB-member_list로 회원번호 확인 및 index 추출
         room = Room.objects.get(room_name=room_name)
-        member_list=room.member_list #회원번호만 적힌 리스트
-        member_list= member_list[1:-1].split(', ')
+        member_list = room.member_list  # 회원번호만 적힌 리스트
+        member_list = member_list[1:-1].split(', ')
         print(member_list)
 
         # CHECK NUMBER
-        ### Correct NUMBER
+        # Correct NUMBER
         if (member_number in member_list):
-            member_index=member_list.index(member_number) +1
+            member_index = member_list.index(member_number) + 1
             print('member_index:'+str(member_index))
-            
-            #해당방의 DB속 명단Excel파일 조회
-            room = Room.objects.get(room_name=room_name)
-            member_file=room.file #명단
 
-            member = load_workbook("media/room/" + str(member_file))
+            # 해당방의 DB속 명단Excel파일 조회
+            room = Room.objects.get(room_name=room_name)
+            member_file = room.file  # 명단
+
+            member = load_workbook("media/" + str(member_file))
             sheet = member['Sheet1']
-            member_file_name = sheet['B'+str(member_index)].value 
-            
+            member_file_name = sheet['B'+str(member_index)].value
+
             # CHECK NAME
-            ### Wrong NAME
+            # Wrong NAME
             if member_file_name != member_name:
                 print('app_enterEXAM_info_no_match_name_num')
-                return HttpResponse(simplejson.dumps({"roomname": "no",  "password" : "no"}))
-            ### Correct NAME
+                return HttpResponse(simplejson.dumps({"roomname": "no",  "password": "no"}))
+            # Correct NAME
             else:
                 print('app_enterEXAM_info_success')
-                return HttpResponse(simplejson.dumps({"roomname": "yes", "password" : member_index }))
-        
-        ### Wrong NUMBER
+                return HttpResponse(simplejson.dumps({"roomname": "yes", "password": member_index}))
+
+        # Wrong NUMBER
         else:
             print('app_enterEXAM_info_no_num')
-            return HttpResponse(simplejson.dumps({"roomname": "fail", "password" : "no"}))
+            return HttpResponse(simplejson.dumps({"roomname": "fail", "password": "no"}))
