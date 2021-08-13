@@ -29,7 +29,6 @@ from openpyxl_image_loader import SheetImageLoader
 def main(request):
     res_data = {}
     user_session = request.session.get('user')              # 로그인 체크
-    print("룸 세션!!!!!!!",request.session.get('room_name'))
     fs = FileSystemStorage()
     if user_session:
         user = User.objects.get(pk=user_session)
@@ -334,7 +333,7 @@ def exam2(request):
                     member_image_data = request.POST.__getitem__('photo')
                     member_image_data = member_image_data[22:]
                     member_image_path = str(room_name)+'_'+str(member_number)+'_capture.png'
-                    member_image = open(os.path.join(FileSystemStorage().location)+str("\\capture/")+member_image_path, "wb")
+                    member_image = open(os.path.join(FileSystemStorage().location)+str("/capture/")+member_image_path, "wb")
                     member_image.write(base64.b64decode(member_image_data))
                     member_image.close()
 
@@ -347,8 +346,10 @@ def exam2(request):
                     fs = FileSystemStorage()
 
                     # Face Recognition
-                    a=(fs.location +str("\capture/")+ member_file_image_path)
-                    b=(fs.location +str("\capture/")+ member_image_path )
+                    a=(fs.location +str("/capture/")+ member_file_image_path)
+                    b=(fs.location +str("/capture/")+ member_image_path )
+                    print(a)
+                    print(b)
                     # luxand API
                     luxand_client = luxand("12a42a8efedf4e24b84730ce440e5429")
                     member_file_image = luxand_client.add_person(str(member_file_name), photos=[a])
@@ -502,6 +503,30 @@ def mylist(request):
     else:
         return redirect('/login')
 
+
+# def room(request):
+#     res_data={}
+#     fs = FileSystemStorage()
+#     user_session = request.session.get('user')
+#     if user_session:
+#         user = User.objects.get(pk=user_session)    # 로그인 체크
+#         res_data['username'] = user.username        # mypage 정보
+#         res_data['email'] = user.email
+#         res_data['register'] = user.registerd_date
+#         res_data['userimg'] = fs.url(user.image)
+
+#         if res_data['userimg'] == "/media/":               # 이미지 체크
+#             res_data['img_check'] = 0
+#         else:
+#             res_data['img_check'] = 1
+
+#         if request.method == 'GET':
+#             return render(request,'roomlist.html',res_data)
+#         elif request.method == 'POST':
+#             return  render(request,'roomlist,html',res_data)
+#     else:
+#         return redirect('/login')
+        
 class RoomList(ListView):
     model = Room
     template_name = 'roomlist.html'
@@ -510,6 +535,12 @@ class RoomList(ListView):
         # session에 저장되어 있는 email과 room의 maker가 같은 것만 queryset에 넣음
         QuerySet = Room.objects.filter(maker = self.request.session.get('user_email')).order_by('-make_date') 
         return QuerySet
+
+    # def get_context_data(self):
+    #     user = User.objects.get(pk= self.request.session.get('user'))                  
+    #     res_data = {}
+    #     res_data['username']= user.username
+    #     return res_data
 
 class AnalyticsList(ListView):
     model = Analytics
@@ -564,7 +595,7 @@ def analyticsDetail(request,pk):
     else:
         return redirect('/login')
 
-def analytics(request):                     # !!!!!!!!!!!!!!!!!!!!!!!!!!!! 모든 단계가 끝나고 room_session 지워야 함!!!!!!!!!!!!!!!!1
+def analytics(request):                     # !!!!!!!!!!!!!!!!!!!!!!!!!!!! 모든 단계가 끝나고 room_session 지워야 함
     res_data={}
     fs = FileSystemStorage()
     user_session = request.session.get('user')
@@ -581,8 +612,10 @@ def analytics(request):                     # !!!!!!!!!!!!!!!!!!!!!!!!!!!! 모�
             res_data['img_check'] = 1
 
 
-        # 임시로 그래프 그림!!!!!!!!!!!!!!!
+
         analytics = Analytics.objects.filter(email = user.email).last()
+
+        #chartdata 선언
         dataSource = OrderedDict()
         dataSource["data"] = [] #chartdata는 json형식이다.
         dataSource["data"].append({"label": '앱 차단', "value": analytics.app})
@@ -590,8 +623,7 @@ def analytics(request):                     # !!!!!!!!!!!!!!!!!!!!!!!!!!!! 모�
         dataSource["data"].append({"label": '학습 시간', "value": analytics.time})
 
         chartConfig = OrderedDict()
-        chartConfig["caption"] = "집중도 통계"              
-        chartConfig["yAxisName"] = "점수"
+        chartConfig["caption"] = "집중도 통계"                #!!!!!!!!!!!!!!!!!!집중도 레벨 판별 해야함
         chartConfig["numberSuffix"] = "점" #y축 숫자단위
         chartConfig["theme"] = "fusion" #테마
 
@@ -599,11 +631,10 @@ def analytics(request):                     # !!!!!!!!!!!!!!!!!!!!!!!!!!!! 모�
 
         column2D = FusionCharts("column2d", "myFirstChart", "500", "400", "chart-1", "json", dataSource)
         res_data['output'] = column2D.render()
+
+        res_data['count'] = analytics.count
         res_data['rate'] = analytics.rate
         res_data['level'] = analytics.level
-        res_data['count'] = Analytics.objects.filter(room_name = request.session.get('room_name')).count()
-        # 임시로 그래프 그림!!!!!!!!!!!!!!!
-
 
         if request.method == 'GET':
             return render(request,'roomout-analytics.html',res_data)
@@ -665,8 +696,8 @@ def analytics(request):                     # !!!!!!!!!!!!!!!!!!!!!!!!!!!! 모�
             # column2D = FusionCharts("column2d", "myFirstChart", "500", "400", "chart-1", "json", dataSource)
             # res_data['output'] = column2D.render() 
 
-            # analytics = Analytics.objects.fillter(email = user.name).last()
-            # res_data['count'] = Analytics.objects.filter(room_name = room_name).count()
+            # analytics = Analytics.object.fillter(email = user.name).last()
+            # res_data['count'] = Analytics.object.filter(room_name = room_name).count()
             # analytic.count = res_data['count']
             # analytic.save()
             # res_data['rate'] = analytics.rate
@@ -702,24 +733,21 @@ def roomout(request,time,mode):
     fs = FileSystemStorage()
     user_session = request.session.get('user')
     room_name_session = request.session.get('room_name')
-    print("룸 세션!!!!!!!!!!!",room_name_session)
     room = Room.objects.get(room_name = room_name_session)
-    user = User.objects.get(email = room.maker)
-    res_data['maker_name'] = user.username
     if user_session:
         user = User.objects.get(pk=user_session)    # 로그인 체크
         res_data['username'] = user.username        # mypage 정보
         res_data['email'] = user.email
         res_data['register'] = user.registerd_date
         res_data['userimg'] = fs.url(user.image)
-
-        
         if res_data['userimg'] == "/media/":               # 이미지 체크
             res_data['img_check'] = 0
         else:
             res_data['img_check'] = 1
 
-        
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",room, room.maker)
+        user = User.objects.get(email = room.maker)
+        res_data['maker'] = user.username
         output = ''
         if mode == 'EXAM':
             if request.method == 'GET':
@@ -728,6 +756,18 @@ def roomout(request,time,mode):
                 del(request.session['room_name'])  # EXAM은 이제 끝났으니 room session 삭제
                 return render(request,'roomout-success.html',res_data)
         elif mode == 'STUDY':
+            time = time/1000/60
+            if time >= 120:
+                time = 100
+            elif time < 120 and time >= 110:
+                time = 95
+            elif time <110 and time >= 100:
+                time = 90
+            elif time < 100:
+                time = time - 10
+            else:
+                time = 0
+
             analytics = Analytics.objects.filter(room_name = request.session.get('room_name'))
             if analytics: # 해당 룸의 row가 있다.
                 for x in analytics:
@@ -769,7 +809,6 @@ def roomoutExam(request):
         res_data['register'] = user.registerd_date
         res_data['userimg'] = fs.url(user.image)
 
-        
         if res_data['userimg'] == "/media/":               # 이미지 체크
             res_data['img_check'] = 0
         else:
