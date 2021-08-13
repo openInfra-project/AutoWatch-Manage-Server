@@ -109,7 +109,9 @@ def app_login(request):
     # 앱에서 오는 로그인 요청
     if request.method == "POST":
         email = request.POST.get('email', None)
+        print(email)
         password = request.POST.get('password', None)
+        print(password)
         # 받은 이메일이랑 비밀번호 =데이터와 일치하면
         # 리턴값으로 숫자 200 = 로그인 성공
         # 일치 안하면 숫자 100 = 로그인 실패

@@ -1056,8 +1056,8 @@ def app_images(request):
         fs = FileSystemStorage()
 
         # Face Recognition
-        a = (fs.location + str("\capture/") + member_file_image_path)
-        b = (fs.location + str("\capture/") + capture_image.name)
+        a = (fs.location + str("/capture/") + member_file_image_path)
+        b = (fs.location + str("/capture/") + capture_image.name)
         # luxand API
         luxand_client = luxand("12a42a8efedf4e24b84730ce440e5429")
         member_file_image = luxand_client.add_person(
