@@ -811,8 +811,11 @@ def roomout(request,time,mode):
             if request.method == 'GET':
                 return render(request,'roomout.html',res_data)
             elif request.method == 'POST':
-                del(request.session['room_name'])  # EXAM은 이제 끝났으니 room session 삭제
-                return render(request,'roomout-success.html',res_data)
+                if user.check== False:
+                    return redirect('/main/roomout/exam')
+                else:
+                    res_data['check'] = "차단이 완료되지 않았습니다."
+                    return render(request,'roomout.html',res_data)
         elif mode == 'STUDY':
             time = time/1000/60
             if time >= 120:
@@ -862,6 +865,7 @@ def roomoutExam(request):
     res_data={}
     fs = FileSystemStorage()
     user_session = request.session.get('user')
+    del(request.session['room_name'])  # EXAM은 이제 끝났으니 room session 삭제
     if user_session:
         user = User.objects.get(pk=user_session)    # 로그인 체크
         res_data['username'] = user.username        # mypage 정보
@@ -875,13 +879,9 @@ def roomoutExam(request):
             res_data['img_check'] = 1
 
         if request.method == 'GET':
-            return render(request,'roomout.html',res_data)
+            return render(request,'roomout-success.html',res_data)
         elif request.method == 'POST':
-            if user.check== False:
-                return redirect('/main/roomout/analytics')
-            else:
-                res_data['check'] = "차단이 완료되지 않았습니다."
-                return render(request,'roomout.html',res_data)
+            return render(request,'roomout-success.html',res_data)
     else:
         return redirect('/login')
 
