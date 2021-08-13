@@ -26,6 +26,7 @@ class Analytics(models.Model):
     app = models.IntegerField(verbose_name="앱 차단 점수",default=0)    
     person = models.IntegerField(verbose_name="자리 이탈 점수",default=0)
     time = models.IntegerField(verbose_name="학습 시간",default=0)
+    list = models.IntegerField(verbose_name="list 변수",default=0)
     make_date = models.DateTimeField(auto_now_add=True, verbose_name='생성 날짜')
     def __str__(self):
         return self.email

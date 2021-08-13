@@ -9,6 +9,6 @@ class RoomAdmin(admin.ModelAdmin):
 admin.site.register(Room, RoomAdmin)
 
 class AnalyticsAdmin(admin.ModelAdmin):
-    list_display =('room_name','email','rate','level','app','person','time','make_date')
+    list_display =('room_name','email','rate','level','app','person','time','list','make_date')
 
 admin.site.register(Analytics, AnalyticsAdmin)

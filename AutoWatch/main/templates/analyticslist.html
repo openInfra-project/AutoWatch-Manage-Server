@@ -55,21 +55,21 @@
         <div class="list-wapper" id="list-wapper" name="list-wapper" >
           {% if object_list %}
             {% for Analytics in object_list %}
-              {% if Analytics.app > 90 and Analytics.person > 90 and Analytics.time > 60 %}
+              {% if Analytics.list == 1 %}
                 <div class="analytics-list">
                   <img src="/static/assets/images/gold-medal.png" alt="">
                   <div class="over"><span class="list-sub-text-anal">앱 차단: </span><span class="list-main-text">{{Analytics.app}}점</span><br><span class="list-sub-text">자리 이탈: </span><span class="list-main-text">{{Analytics.person}}점</span></div>
                   <div class="under"><span class="list-sub-text">학습 시간: </span><span class="list-main-text">{{Analytics.time}}분</span><br><span class="list-sub-text">날짜: </span><span class="list-main-text-date">{{Analytics.make_date}}</span></div>
                   <button onclick="location.href='/main/list/analytics/{{Analytics.pk}}'">그래프 보기</button>
                 </div>
-              {% elif Analytics.app > 80 and Analytics.person > 80 and Analytics.time > 50 %}
+              {% elif Analytics.list == 2 %}
                 <div class="analytics-list">
                   <img src="/static/assets/images/silver-medal.png" alt="">
                   <div class="over"><span class="list-sub-text-anal">앱 차단: </span><span class="list-main-text">{{Analytics.app}}점</span><br><span class="list-sub-text">자리 이탈: </span><span class="list-main-text">{{Analytics.person}}점</span></div>
                   <div class="under"><span class="list-sub-text">학습 시간: </span><span class="list-main-text">{{Analytics.time}}분</span><br><span class="list-sub-text">날짜: </span><span class="list-main-text-date">{{Analytics.make_date}}</span></div>
                   <button onclick="location.href='/main/list/analytics/{{Analytics.pk}}'">그래프 보기</button>
                 </div>
-              {% elif Analytics.app > 70 and Analytics.person > 70 and Analytics.time > 40 %}
+              {% elif Analytics.list == 3 %}
                 <div class="analytics-list">
                   <img src="/static/assets/images/bronze-medal.png" alt="">
                   <div class="over"><span class="list-sub-text-anal">앱 차단: </span><span class="list-main-text">{{Analytics.app}}점</span><br><span class="list-sub-text">자리 이탈: </span><span class="list-main-text">{{Analytics.person}}점</span></div>
@@ -89,5 +89,9 @@
       </div> 
     </div>
 
+
+<script>
+  console.log("{{object_list}}")
+</script>
 </body>
 </html>

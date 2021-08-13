@@ -545,12 +545,13 @@ class RoomList(ListView):
 class AnalyticsList(ListView):
     model = Analytics
     template_name = 'analyticslist.html'
+    
     def get_queryset(self):   
         QuerySet = Analytics.objects.filter(email = self.request.session.get('user_email')).order_by('-make_date')
+        print("통계 리스트!!!!!!!!!!!!",QuerySet)
         return QuerySet
 
 def analyticsDetail(request,pk):
-    print("!!!!!!!!!!!!!!!!!!!!",pk)
     analytics = Analytics.objects.get(pk=pk)
     res_data={}
     fs = FileSystemStorage()
@@ -585,9 +586,9 @@ def analyticsDetail(request,pk):
         column2D = FusionCharts("column2d", "myFirstChart", "500", "400", "chart-1", "json", dataSource)
         res_data['output'] = column2D.render()
 
-        # res_data['count'] = analytics.count
-        # res_data['rate'] = analytics.rate
-        # res_data['level'] = analytics.level
+        res_data['count'] = analytics.count
+        res_data['rate'] = analytics.rate
+        res_data['level'] = analytics.level
         if request.method == 'GET':
             return render(request,'list-analytics.html',res_data)
         elif request.method == 'POST':
@@ -617,30 +618,44 @@ def analytics(request):                     # !!!!!!!!!!!!!!!!!!!!!!!!!!!! 모�
         appPoint = analytics.app
         personPoint = analytics.person
         timePoint = analytics.time
-        if (appPoint + personPoint + timePoint <= 299):
+        list = analytics.list
+        print("!!!!!!!!!!!!!!!!!!!!!!!시간!!",timePoint)
+        if (appPoint + personPoint + timePoint >= 299):
             level = 10
-        elif (appPoint + personPoint + timePoint <= 270 and appPoint + personPoint + timePoint < 299):
+            list = 1
+        elif (appPoint + personPoint + timePoint >= 270 and appPoint + personPoint + timePoint < 299):
             level = 9
-        elif (appPoint + personPoint + timePoint <= 240 and appPoint + personPoint + timePoint < 270):
+            list = 1
+        elif (appPoint + personPoint + timePoint >= 240 and appPoint + personPoint + timePoint < 270):
             level = 8
-        elif (appPoint + personPoint + timePoint <= 210 and appPoint + personPoint + timePoint < 240):
+            list = 2
+        elif (appPoint + personPoint + timePoint >= 210 and appPoint + personPoint + timePoint < 240):
             level = 7
-        elif (appPoint + personPoint + timePoint <= 180 and appPoint + personPoint + timePoint < 210):
+            list = 2
+        elif (appPoint + personPoint + timePoint >= 180 and appPoint + personPoint + timePoint < 210):
             level = 6
-        elif (appPoint + personPoint + timePoint <= 150 and appPoint + personPoint + timePoint < 180):
+            list = 3
+        elif (appPoint + personPoint + timePoint >= 150 and appPoint + personPoint + timePoint < 180):
             level = 5
-        elif (appPoint + personPoint + timePoint <= 120 and appPoint + personPoint + timePoint < 150):
+            list = 3
+        elif (appPoint + personPoint + timePoint >= 120 and appPoint + personPoint + timePoint < 150):
             level = 4
-        elif (appPoint + personPoint + timePoint <= 90 and appPoint + personPoint + timePoint < 120):
+            list = 3
+        elif (appPoint + personPoint + timePoint >= 90 and appPoint + personPoint + timePoint < 120):
             level = 3
-        elif (appPoint + personPoint + timePoint <= 60 and appPoint + personPoint + timePoint < 90):
+            list = 3
+        elif (appPoint + personPoint + timePoint >= 60 and appPoint + personPoint + timePoint < 90):
             level = 2
+            list = 3
         elif (appPoint + personPoint + timePoint < 60 ):
             level = 1
+            list = 3
         else:
             level = 0
+            list = 3
 
         analytics.level = level
+        analytics.list = list
         analytics.save()
 
 
@@ -672,8 +687,8 @@ def analytics(request):                     # !!!!!!!!!!!!!!!!!!!!!!!!!!!! 모�
         column2D = FusionCharts("column2d", "myFirstChart", "500", "400", "chart-1", "json", dataSource)
         res_data['output'] = column2D.render() 
 
-        analytics = Analytics.object.fillter(email = user.name).last()
-        res_data['count'] = Analytics.object.filter(room_name = room_name).count()
+        analytics = Analytics.objects.filter(email = user.email).last()
+        res_data['count'] = Analytics.objects.filter(room_name = room_name).count()
         analytics.count = res_data['count']
         analytics.save()
         res_data['rate'] = analytics.rate
@@ -808,6 +823,8 @@ def roomout(request,time,mode):
                 time = 90
             elif time < 100:
                 time = time - 10
+            elif time <= 10:
+                time = 0
             else:
                 time = 0
 
