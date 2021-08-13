@@ -30,16 +30,12 @@ from openpyxl_image_loader import SheetImageLoader
 def main(request):
     res_data = {}
     user_session = request.session.get('user')              # 로그인 체크
-    print("룸 세션!!!!!!!",request.session.get('room_name'))
     fs = FileSystemStorage()
     if user_session:
         user = User.objects.get(pk=user_session)
         res_data['username'] = user.username                # mypage 정보
         res_data['email'] = user.email
         res_data['register'] = user.registerd_date
-        print("!!!!!!!!!!!!!!!!!!!!!!", user.image)
-        print("!!!!!!!!!!!!!!!!!!!!!!", fs.url(user.image))
-
         res_data['userimg'] = fs.url(user.image)
 
         if res_data['userimg'] == "/media/":               # 이미지 체크
@@ -731,7 +727,6 @@ def roomout(request,time,mode):
         else:
             res_data['img_check'] = 1
 
-        
         output = ''
         if mode == 'EXAM':
             if request.method == 'GET':
@@ -740,6 +735,18 @@ def roomout(request,time,mode):
                 del(request.session['room_name'])  # EXAM은 이제 끝났으니 room session 삭제
                 return render(request,'roomout-success.html',res_data)
         elif mode == 'STUDY':
+            time = time/1000/60
+            if time >= 120:
+                time = 100
+            elif time < 120 and time >= 110:
+                time = 95
+            elif time <110 and time >= 100:
+                time = 90
+            elif time < 100:
+                time = time - 10
+            else:
+                time = 0
+
             analytics = Analytics.objects.filter(room_name = request.session.get('room_name'))
             if analytics: # 해당 룸의 row가 있다.
                 for x in analytics:
