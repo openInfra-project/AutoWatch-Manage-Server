@@ -29,6 +29,7 @@ from openpyxl_image_loader import SheetImageLoader
 def main(request):
     res_data = {}
     user_session = request.session.get('user')              # 로그인 체크
+    print("룸 세션!!!!!!!",request.session.get('room_name'))
     fs = FileSystemStorage()
     if user_session:
         user = User.objects.get(pk=user_session)
@@ -563,7 +564,7 @@ def analyticsDetail(request,pk):
     else:
         return redirect('/login')
 
-def analytics(request):                     # !!!!!!!!!!!!!!!!!!!!!!!!!!!! 모든 단계가 끝나고 room_session 지워야 함
+def analytics(request):                     # !!!!!!!!!!!!!!!!!!!!!!!!!!!! 모든 단계가 끝나고 room_session 지워야 함!!!!!!!!!!!!!!!!1
     res_data={}
     fs = FileSystemStorage()
     user_session = request.session.get('user')
@@ -701,7 +702,10 @@ def roomout(request,time,mode):
     fs = FileSystemStorage()
     user_session = request.session.get('user')
     room_name_session = request.session.get('room_name')
+    print("룸 세션!!!!!!!!!!!",room_name_session)
     room = Room.objects.get(room_name = room_name_session)
+    user = User.objects.get(email = room.maker)
+    res_data['maker_name'] = user.username
     if user_session:
         user = User.objects.get(pk=user_session)    # 로그인 체크
         res_data['username'] = user.username        # mypage 정보
@@ -721,7 +725,8 @@ def roomout(request,time,mode):
             if request.method == 'GET':
                 return render(request,'roomout.html',res_data)
             elif request.method == 'POST':
-                return render(request,'roomout-exam.html',res_data)
+                del(request.session['room_name'])  # EXAM은 이제 끝났으니 room session 삭제
+                return render(request,'roomout-success.html',res_data)
         elif mode == 'STUDY':
             analytics = Analytics.objects.filter(room_name = request.session.get('room_name'))
             if analytics: # 해당 룸의 row가 있다.
@@ -741,10 +746,6 @@ def roomout(request,time,mode):
             elif output == 'NO': # 해당 룸의 row 중에 내 아이디의 row가 없다.
                 analytics = Analytics(room_name =  request.session.get('room_name'), email = user.email,time=time)
                 analytics.save()
-
-
-            user = User.objects.get(email = room.maker)
-            res_data['maker_name'] = user.username
 
             if request.method == 'GET':
                 return render(request,'roomout.html',res_data)

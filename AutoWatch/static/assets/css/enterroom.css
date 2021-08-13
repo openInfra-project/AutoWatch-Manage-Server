@@ -334,3 +334,32 @@
         border-bottom: 3px solid #4771cb!important;
     }
     /* roomout END */
+
+    /* roomout-success START */
+    #roomout-suc-text1{
+        font-size: 30px;
+        color: #33ccc5;
+        font-weight: 700;
+        display: flex;
+        justify-content: center;
+        margin-bottom: 50px;
+    }
+    .roomout-suc-text2{
+        font-size: 27px;
+        font-weight: 700;
+        display: none;
+        justify-content: center;
+        margin: 130px 0 50px 0;
+    }
+    .roomout-suc-btn{
+        display: flex;
+        justify-content: center;
+    } 
+    .success{
+        display: flex;
+        justify-content: center;
+    }
+    .fireworks{
+        display: none;
+    }
+    /* roomout-success END */
