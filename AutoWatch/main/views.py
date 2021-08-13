@@ -802,7 +802,7 @@ def roomout(request,time,mode):
             res_data['img_check'] = 0
         else:
             res_data['img_check'] = 1
-
+    
         print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",room, room.maker)
         user = User.objects.get(email = room.maker)
         res_data['maker'] = user.username
