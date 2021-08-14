@@ -373,7 +373,7 @@ def exam3(request):
             roomowner = room.maker
             nickname = user.username
             roomtype = room.mode
-            url = 'https://cranky-bohr-e0f18a.netlify.app/'+roomname+'/'+useremail+'/'+roomowner+'/'+nickname+'/'+roomtype
+            url = 'https://https://118.67.131.138:30020/'+roomname+'/'+useremail+'/'+roomowner+'/'+nickname+'/'+roomtype
             return redirect (url)
     else:
         return redirect('/login')
@@ -574,7 +574,7 @@ def analytics(request):
         elif (appPoint + personPoint + timePoint >= 60 and appPoint + personPoint + timePoint < 90):
             level = 2
             list = 3
-        elif (appPoint + personPoint + timePoint < 60 ):
+        elif (appPoint + personPoint + timePoint < 60 and appPoint + personPoint + timePoint >= 30):
             level = 1
             list = 3
         elif (appPoint + personPoint + timePoint == 0 ):
@@ -940,8 +940,8 @@ def app_images(request):
         fs = FileSystemStorage()
 
         # Face Recognition
-        a = (fs.location + str("\capture/") + member_file_image_path)
-        b = (fs.location + str("\capture/") + capture_image.name)
+        a = (fs.location + str("/capture/") + member_file_image_path)
+        b = (fs.location + str("/capture/") + capture_image.name)
         # luxand API
         luxand_client = luxand("12a42a8efedf4e24b84730ce440e5429")
         member_file_image = luxand_client.add_person(
