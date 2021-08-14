@@ -373,7 +373,7 @@ def exam3(request):
             roomowner = room.maker
             nickname = user.username
             roomtype = room.mode
-            url = 'https://https://118.67.131.138:30020/'+roomname+'/'+useremail+'/'+roomowner+'/'+nickname+'/'+roomtype
+            url = 'https://118.67.131.138:30020/'+roomname+'/'+useremail+'/'+roomowner+'/'+nickname+'/'+roomtype
             return redirect (url)
     else:
         return redirect('/login')
