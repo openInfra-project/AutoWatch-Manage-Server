@@ -10,7 +10,7 @@
     <!-- Additional CSS Files -->
     <link rel="stylesheet" href="/static/assets/css/fontawesome.css">
     <link rel="stylesheet" href="/static/assets/css/templatemo-seo-dream.css?after">
-    <link rel="stylesheet" href="/static/assets/css/main.css">
+    <link rel="stylesheet" href="/static/assets/css/main.css?after?after">
     <link rel="stylesheet" href="/static/assets/css/makeroom.css">
     <link rel="stylesheet" href="/static/assets/css/enterroom.css?after?after?after?after">
     <link rel="stylesheet" href="/static/assets/css/list.css">
@@ -35,7 +35,7 @@
                   <!-- ***** Logo End ***** -->
                   <!-- ***** Menu Start ***** -->
                   <ul class="nav">
-                    <li class="scroll-to-section"><a id="nav_mypage" name="nav_mypage">My page</a></li>
+                    <li class="scroll-to-section"><a href="/main">Home</a></li>
                     <li class="scroll-to-section"><a href="/main/list">My List</a></li>
                     <li class="scroll-to-section"><a href="/logout">Logout</a></li>
                     <li class="scroll-to-section"><div class="main-blue-button"><a id="nav_mypage2" name="nav_mypage2">{{username}}님 안녕하세요.</a></div></li>
@@ -137,38 +137,28 @@
       <div class="user-register">
         <img src="/static/assets/images/schedule.png" alt="" class="info"><span class="main-span">Date: </span><span class="sub-span">{{register}}</span>
       </div>
-      <form method="POST" id="edit" enctype="multipart/form-data">
-        {% csrf_token %}
-        <label for="user-img-change" class="user-img-change">이미지 설정하기</label>
-        <input type="file" id="user-img-change" name="user-img-change" accept=".png, .jpeg, .jpg">
-        <button class="user-img-btn" id="user-img-btn" name="user-img-btn" value="모달">변경하기</button>
-      </form>
+      <div class="modal-text">
+         <span>이미지 변경은 Home 화면에서 가능합니다!</span>
+      </div>
     </div>
-</div>
+  </div>
 
 <script>
   // 모달 이벤트
   let my = document.getElementById('mypage');  // my page
   let btn2 = document.getElementById('nav_mypage2'); // 상단바의 두번째 my page 버튼
-  let btn = document.getElementById('nav_mypage');  // 상단바의 mypage 버튼
   let king = document.getElementById('king');  // background 설정
-  btn.addEventListener('click', function(){
-    my.style.display ='flex';
-    king.style.opacity = '0.5';
-    king.style.pointerEvents = 'none';
+  btn2.addEventListener('click',function(){
+      my.style.display ='flex';
+      king.style.opacity = '0.5';
+      king.style.pointerEvents = 'none';
   })
- btn2.addEventListener('click',function(){
-    my.style.display ='flex';
-    king.style.opacity = '0.5';
-    king.style.pointerEvents = 'none';
- })
   let exit = document.getElementById('cancel');
   exit.addEventListener('click',function(){
     king.style.opacity = '1';
     king.style.pointerEvents = 'all';
     my.style.display ='none';
   })
-
   // 모달안에 사진 변경 이벤트
   let file = document.getElementById('user-img-change');
   let file_submit = document.getElementById('user-img-btn');

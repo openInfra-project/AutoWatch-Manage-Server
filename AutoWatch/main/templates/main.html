@@ -62,30 +62,30 @@
       </div>
     </div>
     <div class="animate__animated animate__slideInRight" id="mypage">
-        <div class="mypage-inner">
-          <img src="/static/assets/images/cancel.png" alt="" class="cancel" id="cancel" name="cancel">
-          <span class="my_text">My Page</span>
-          {% if img_check == 0 %}
-            <img src="/static/assets/images/face-recognition.png" alt="" id="user-img">
-          {% else %}
-            <img src="{{userimg}}" alt="" id="user-img">
-          {%endif%}
-          <div class="user-email">
-            <img src="/static/assets/images/email.png" alt="" class="info"><span class="main-span">Email: </span><span class="sub-span">{{email}}</span>
-          </div>
-          <div class="user-name">
-            <img src="/static/assets/images/user.png" alt="" class="info"><span class="main-span">Name: </span><span class="sub-span">{{username}}</span>
-          </div>
-          <div class="user-register">
-            <img src="/static/assets/images/schedule.png" alt="" class="info"><span class="main-span">Date: </span><span class="sub-span">{{register}}</span>
-          </div>
-          <form method="POST" id="edit" enctype="multipart/form-data">
-            {% csrf_token %}
-            <label for="user-img-change" class="user-img-change">이미지 설정하기</label>
-            <input type="file" id="user-img-change" name="user-img-change" accept=".png, .jpeg, .jpg">
-            <button class="user-img-btn" id="user-img-btn" name="user-img-btn" value="모달">변경하기</button>
-          </form>
+      <div class="mypage-inner">
+        <img src="/static/assets/images/cancel.png" alt="" class="cancel" id="cancel" name="cancel">
+        <span class="my_text">My Page</span>
+        {% if img_check == 0 %}
+          <img src="/static/assets/images/face-recognition.png" alt="" id="user-img">
+        {% elif img_check == 1%}
+          <img src="{{userimg}}" alt="" id="user-img">
+        {%endif%}
+        <div class="user-email">
+          <img src="/static/assets/images/email.png" alt="" class="info"><span class="main-span">Email: </span><span class="sub-span">{{email}}</span>
         </div>
+        <div class="user-name">
+          <img src="/static/assets/images/user.png" alt="" class="info"><span class="main-span">Name: </span><span class="sub-span">{{username}}</span>
+        </div>
+        <div class="user-register">
+          <img src="/static/assets/images/schedule.png" alt="" class="info"><span class="main-span">Date: </span><span class="sub-span">{{register}}</span>
+        </div>
+        <form method="POST" id="edit" enctype="multipart/form-data">
+          {% csrf_token %}
+          <label for="user-img-change" class="user-img-change">이미지 설정하기</label>
+          <input type="file" id="user-img-change" name="user-img-change" accept=".png, .jpeg, .jpg" onchange="setImage()">
+          <button class="user-img-btn" id="user-img-btn" name="user-img-btn" value="모달">변경하기</button>
+        </form>
+      </div>
     </div>
     
 
@@ -121,8 +121,10 @@
         file_submit.style.display = 'inline'
       })
 
-      let test = "{{username}}"
-      console.log(test)
+      function setImage(){
+      let image = document.getElementById('user-img')
+      image.src = '/static/assets/images/modal-text.png'
+      }
     </script>
 
 </body>

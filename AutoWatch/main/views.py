@@ -27,6 +27,7 @@ from openpyxl_image_loader import SheetImageLoader
 
 
 def main(request):
+    print("세션!!!!!!!!!!!!!!",request.session.get('room_name'))
     res_data = {}
     user_session = request.session.get('user')              # 로그인 체크
     fs = FileSystemStorage()
@@ -76,27 +77,21 @@ def makeroom(request):
         if request.method == 'GET':
             return render(request, 'makeroom.html', res_data)
         elif request.method == 'POST':
-            post_type = request.POST.get('user-img-btn')
-            if post_type == "모달":  # 버튼 값을 읽어 POST 구분, 이미지 변경 POST
-                # 이미지 변경 저장
-                userimage = request.FILES['user-img-change']
-                res_data['userimg'] = fs.url(userimage)
-                res_data['img_check'] = 1
-                user.image = userimage
-                user.save()
-                return render(request, 'makeroom.html', res_data)
-            else:  # Room create POST
-                # makeroom POST 값
-                room_name = request.POST.get('room-name', None)
-                room_password = request.POST.get('room-password', None)
-                study = request.POST.getlist('study')
-                exam = request.POST.getlist('exam')
-                maker = user.email
-                member_list=[]
-                if exam and not(study):
+            room_name = request.POST.get('room-name', None)
+            room_password = request.POST.get('room-password', None)
+            study = request.POST.getlist('study')
+            exam = request.POST.getlist('exam')
+            maker = user.email
+            member_list=[]
+            if exam and not(study):
+                try:
                     file = request.FILES['file']
-                    #학생명단 file
-                    #명단에서학번만 추출
+                except:
+                    file = "NULL"
+
+                #학생명단 file
+                #명단에서학번만 추출
+                if not(file == "NULL"):
                     fs = FileSystemStorage()
                     filename = fs.save(file.name, file)
                     print(filename)
@@ -106,33 +101,32 @@ def makeroom(request):
                         member_list.append(cell.value)
                     
                     os.remove(os.path.join(settings.MEDIA_ROOT, file.name))
+            elif study and not(exam):
+                file = "NULL"
 
-                elif study and not(exam):
-                    file = "NULL"
-
-                if (len(room_name) > 7):
-                    res_data['name_error'] = '방 이름을 생성해 주세요.'
-                elif not(room_password):
-                    res_data['password_error'] = '비밀번호를 생성해 주세요.'
-                elif not(study or exam):
-                    res_data['mode_error'] = 'Mode를 선택해 주세요.'
-                else:
-                    if (exam and not(file)):
-                        res_data['mode_error'] = 'Exam Mode는 명단 첨부가 필수 입니다.'
-                        # room 정보 비정상 일시
-                        return render(request, 'makeroom.html', res_data)
-                    else:  # 정상적으로 room 정보 기입시
-                        if study and not(exam):     # mode를 db에 저장
-                            mode = 'STUDY'
-                        elif exam and not(study):
-                            mode = 'EXAM'
-                        room = Room(room_name=room_name, room_password=room_password,
-                                    file=file, mode=mode, maker=maker, member_list = member_list)  # db에 room 정보 저장
-                        room.save()
-                        request.session['room_name'] = room_name # 방을 성공적으로 만들면 room_name으로 room_session을 저장
-                        return redirect('/main/makeroom/success')
-                # room 정보 비정상 일시
-                return render(request, 'makeroom.html', res_data)
+            if (len(room_name) > 7):
+                res_data['name_error'] = '방 이름을 생성해 주세요.'
+            elif not(room_password):
+                res_data['password_error'] = '비밀번호를 생성해 주세요.'
+            elif not(study or exam):
+                res_data['mode_error'] = 'Mode를 선택해 주세요.'
+            else:
+                if (exam and file == "NULL"):
+                    res_data['mode_error'] = 'Exam Mode는 명단 첨부가 필수 입니다.'
+                    # room 정보 비정상 일시
+                    return render(request, 'makeroom.html', res_data)
+                else:  # 정상적으로 room 정보 기입시
+                    if study and not(exam):     # mode를 db에 저장
+                        mode = 'STUDY'
+                    elif exam and not(study):
+                        mode = 'EXAM'
+                    room = Room(room_name=room_name, room_password=room_password,
+                                file=file, mode=mode, maker=maker, member_list = member_list)  # db에 room 정보 저장
+                    room.save()
+                    request.session['room_name'] = room_name # 방을 성공적으로 만들면 room_name으로 room_session을 저장
+                    return redirect('/main/makeroom/success')
+            # room 정보 비정상 일시
+            return render(request, 'makeroom.html', res_data)
     else:
         return redirect('/login')
 
@@ -164,20 +158,10 @@ def make_success(request):
         if request.method == 'GET':
             return render(request, 'make_success.html', res_data)
         elif request.method == 'POST':
-            post_type = request.POST.get('user-img-btn')
-            if post_type == "모달":  # 버튼 값을 읽어 POST 구분, 이미지 변경 POST
-                # 이미지 변경 저장
-                userimage = request.FILES['user-img-change']
-                res_data['userimg'] = fs.url(userimage)
-                res_data['img_check'] = 1
-                user.image = userimage
-                user.save()
-                return render(request, 'make_success.html', res_data)
-            else:  # Room 입장 POST
-                if room.mode == "EXAM":
-                    return redirect('/main/enteroom/exam1')
-                elif room.mode == "STUDY":
-                    return redirect('/main/enteroom/study1')
+            if room.mode == "EXAM":
+                return redirect('/main/enteroom/exam1')
+            elif room.mode == "STUDY":
+                return redirect('/main/enteroom/study1')
     else:
         return redirect('/login')
 
@@ -201,46 +185,36 @@ def enteroom(request):
         if request.method == 'GET':
             return render(request, 'enteroom.html', res_data)
         elif request.method == 'POST':
-            post_type = request.POST.get('user-img-btn')
-            if post_type == "모달":  # 버튼 값을 읽어 POST 구분, 이미지 변경 POST
-                # 이미지 변경 저장
-                userimage = request.FILES['user-img-change']
-                res_data['userimg'] = fs.url(userimage)
-                res_data['img_check'] = 1
-                user.image = userimage
-                user.save()
-                return render(request, 'enteroom.html', res_data)
-            else:  # Room 입장 POST
-                room_name = request.POST.get('room_name')
-                room_password = request.POST.get('room_password')
+            room_name = request.POST.get('room_name')
+            room_password = request.POST.get('room_password')
 
-                if not(room_name):
-                    res_data['name_error'] = 'Room 이름을 입력하세요.'
-                elif not(room_password):
-                    res_data['password_error'] = 'Room 비밀번호를 입력하세요.'
-                elif not(room_name and room_password):
-                    res_data['all_error'] = '모든 값을 입력하세요.'
+            if not(room_name):
+                res_data['name_error'] = 'Room 이름을 입력하세요.'
+            elif not(room_password):
+                res_data['password_error'] = 'Room 비밀번호를 입력하세요.'
+            elif not(room_name and room_password):
+                res_data['all_error'] = '모든 값을 입력하세요.'
+            else:
+                try:
+                    # 필드명 = 값 이면 Room 객체 생성
+                    room = Room.objects.get(room_name=room_name)
+                except Room.DoesNotExist:
+                    # room이 없는 예외 처리
+                    res_data['error'] = '존재하지 않는 Room 입니다.'
+                    return render(request, 'enteroom.html', res_data)
+                
+                request.session['room_name'] = room_name   # 방 입장하는 순간 room session의 기준은 입장한 방 이름
+                db_password = room.room_password
+                if db_password == room_password:     # room 정상 입장
+                    if room.mode == "EXAM":
+                        return redirect('/main/enteroom/exam1')
+                    elif room.mode == "STUDY":
+                        return redirect('/main/enteroom/study1')
                 else:
-                    try:
-                        # 필드명 = 값 이면 Room 객체 생성
-                        room = Room.objects.get(room_name=room_name)
-                    except Room.DoesNotExist:
-                        # room이 없는 예외 처리
-                        res_data['error'] = '존재하지 않는 Room 입니다.'
-                        return render(request, 'enteroom.html', res_data)
-                    
-                    request.session['room_name'] = room_name   # 방 입장하는 순간 room session의 기준은 입장한 방 이름
-                    db_password = room.room_password
-                    if db_password == room_password:     # room 정상 입장
-                        if room.mode == "EXAM":
-                            return redirect('/main/enteroom/exam1')
-                        elif room.mode == "STUDY":
-                            return redirect('/main/enteroom/study1')
-                    else:
-                        res_data['error'] = '비밀번호가 틀렸습니다.'
-                        return render(request, 'enteroom.html', res_data)
-                # room 정보 비정상 일시
-                return render(request, 'enteroom.html', res_data)
+                    res_data['error'] = '비밀번호가 틀렸습니다.'
+                    return render(request, 'enteroom.html', res_data)
+            # room 정보 비정상 일시
+            return render(request, 'enteroom.html', res_data)
     else:
         return redirect('/login')
 
@@ -461,21 +435,6 @@ def study2(request):
             roomtype = room.mode
             url = 'https://cranky-bohr-e0f18a.netlify.app/'+roomname+'/'+useremail+'/'+roomowner+'/'+nickname+'/'+roomtype
             return redirect (url)
-            # post_type = request.POST.get('enterRoom')
-            # if post_type == 'toSsimong':   # 준영으로 넘어가는 나의 POST
-            #     return  render(request,'ssimong.html',res_data)
-            # else:   #  준영이 나에게 요청하는 POST
-
-            #     # 준영에게 넘겨줄 data
-            #     room_session = request.session.get('room_name')
-            #     room = Room.objects.get(room_name=room_session)
-            #     room_data = {}
-            #     room_data['roomname'] = room.room_name
-            #     room_data['useremail'] = user.email
-            #     room_data['nickname'] = user.username
-            #     room_data['roomowner'] = room.maker
-            #     room_data['roomtype'] = room.mode
-            #     return HttpResponse(simplejson.dumps(room_data))
     else:
         return redirect('/login')
 
@@ -503,44 +462,13 @@ def mylist(request):
     else:
         return redirect('/login')
 
-
-# def room(request):
-#     res_data={}
-#     fs = FileSystemStorage()
-#     user_session = request.session.get('user')
-#     if user_session:
-#         user = User.objects.get(pk=user_session)    # 로그인 체크
-#         res_data['username'] = user.username        # mypage 정보
-#         res_data['email'] = user.email
-#         res_data['register'] = user.registerd_date
-#         res_data['userimg'] = fs.url(user.image)
-
-#         if res_data['userimg'] == "/media/":               # 이미지 체크
-#             res_data['img_check'] = 0
-#         else:
-#             res_data['img_check'] = 1
-
-#         if request.method == 'GET':
-#             return render(request,'roomlist.html',res_data)
-#         elif request.method == 'POST':
-#             return  render(request,'roomlist,html',res_data)
-#     else:
-#         return redirect('/login')
-        
 class RoomList(ListView):
     model = Room
     template_name = 'roomlist.html'
-    # context_object_name = "test"
     def get_queryset(self):    # roomlist를 보여줄 queryset 특정
         # session에 저장되어 있는 email과 room의 maker가 같은 것만 queryset에 넣음
         QuerySet = Room.objects.filter(maker = self.request.session.get('user_email')).order_by('-make_date') 
         return QuerySet
-
-    # def get_context_data(self):
-    #     user = User.objects.get(pk= self.request.session.get('user'))                  
-    #     res_data = {}
-    #     res_data['username']= user.username
-    #     return res_data
 
 class AnalyticsList(ListView):
     model = Analytics
@@ -548,7 +476,6 @@ class AnalyticsList(ListView):
     
     def get_queryset(self):   
         QuerySet = Analytics.objects.filter(email = self.request.session.get('user_email')).order_by('-make_date')
-        print("통계 리스트!!!!!!!!!!!!",QuerySet)
         return QuerySet
 
 def analyticsDetail(request,pk):
@@ -576,7 +503,7 @@ def analyticsDetail(request,pk):
         dataSource["data"].append({"label": '학습 시간', "value": analytics.time})
 
         chartConfig = OrderedDict()
-        chartConfig["caption"] = "집중도 통계"                #!!!!!!!!!!!!!!!!!!집중도 레벨 판별 해야함
+        chartConfig["caption"] = "집중도 통계"  
         chartConfig["yAxisName"] = "점수"
         chartConfig["numberSuffix"] = "점" #y축 숫자단위
         chartConfig["theme"] = "fusion" #테마
@@ -596,7 +523,7 @@ def analyticsDetail(request,pk):
     else:
         return redirect('/login')
 
-def analytics(request):                     # !!!!!!!!!!!!!!!!!!!!!!!!!!!! 모든 단계가 끝나고 room_session 지워야 함
+def analytics(request):          
     res_data={}
     fs = FileSystemStorage()
     user_session = request.session.get('user')
@@ -619,7 +546,7 @@ def analytics(request):                     # !!!!!!!!!!!!!!!!!!!!!!!!!!!! 모�
         personPoint = analytics.person
         timePoint = analytics.time
         list = analytics.list
-        print("!!!!!!!!!!!!!!!!!!!!!!!시간!!",timePoint)
+
         if (appPoint + personPoint + timePoint >= 299):
             level = 10
             list = 1
@@ -650,6 +577,9 @@ def analytics(request):                     # !!!!!!!!!!!!!!!!!!!!!!!!!!!! 모�
         elif (appPoint + personPoint + timePoint < 60 ):
             level = 1
             list = 3
+        elif (appPoint + personPoint + timePoint == 0 ):
+            level = 0
+            list = 3    
         else:
             level = 0
             list = 3
@@ -694,72 +624,10 @@ def analytics(request):                     # !!!!!!!!!!!!!!!!!!!!!!!!!!!! 모�
         res_data['rate'] = analytics.rate
         res_data['level'] = analytics.level
 
+        del(request.session['room_name'])  # EXAM은 이제 끝났으니 room session 삭제!!!!
         if request.method == 'GET':
             return render(request,'roomout-analytics.html',res_data)
         elif request.method == 'POST':  # 집중도에 사용할 데이터 받는 POST
-
-            # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!지우지 마세요
-            #1. 집중도 레벨
-            # appPoint = 몇점 , personPoin = 몇점 , timePoint = 몇점
-            # if(appPoint + pesonPoint + timePoint <= 299)
-            #   level = 10
-            # elif (appPoint + pesonPoint + timePoint <= 270 && appPoint + pesonPoint + timePoint < 299)
-            #   level = 9
-            # elif (appPoint + pesonPoint + timePoint <= 240 && appPoint + pesonPoint + timePoint < 270)
-            #   level = 8
-            # elif (appPoint + pesonPoint + timePoint <= 210 && appPoint + pesonPoint + timePoint < 240)
-            #   level = 7
-            # elif (appPoint + pesonPoint + timePoint <= 180 && appPoint + pesonPoint + timePoint < 210)
-            #   level = 6
-            # elif (appPoint + pesonPoint + timePoint <= 150 && appPoint + pesonPoint + timePoint < 180)
-            #   level = 5
-            # elif (appPoint + pesonPoint + timePoint <= 120 && appPoint + pesonPoint + timePoint < 150)
-            #   level = 4
-            # elif (appPoint + pesonPoint + timePoint <= 90 && appPoint + pesonPoint + timePoint < 120)
-            #   level = 3
-            # elif (appPoint + pesonPoint + timePoint <= 60 && appPoint + pesonPoint + timePoint < 90)
-            #   level = 2
-            # elif (appPoint + pesonPoint + timePoint < 60 )
-            #   level = 1
-            # else
-            #   에러입니다.
-            # room_name = request.session.get('room_name')
-            # analytics = Analytics(room_name = room_name, email = user.email, grade = level, app = appPoint, person = personPoint = time = timePoint)
-            # analytics.save()
-
-            #2. 등수  (모두 다 나왔을때, 나오지 않았을때 고려 해야함)
-            # analytic = Analytics.object.filter('room_name = room_name').order_by('-level')  세션에 있는 room_name과 같은 통계 자료를 가져옴
-            # num = 0
-            # for x in analytic:
-            #     if x.email == user.email:
-            #         x.rate = num + 1
-            #         x.save()
-            #         print(x.rate)
-            #     else:
-            #         num = num+1
-        
-            # dataSource = OrderedDict()
-            # dataSource["data"] = [] #chartdata는 json형식이다.
-            # dataSource["data"].append({"label": '앱 차단', "value": appPoint})
-            # dataSource["data"].append({"label": '자리이탈', "value": personPoint})
-            # dataSource["data"].append({"label": '학습시간', "value": timePoint})
-
-            # chartConfig = OrderedDict()
-            # chartConfig["caption"] = "집중도 통계"  
-            # chartConfig["numberSuffix"] = "점" #y축 숫자단위
-            # chartConfig["theme"] = "fusion" #테마
-
-            # dataSource["chart"] = chartConfig # 그래프 특징 설정
-
-            # column2D = FusionCharts("column2d", "myFirstChart", "500", "400", "chart-1", "json", dataSource)
-            # res_data['output'] = column2D.render() 
-
-            # analytics = Analytics.object.fillter(email = user.name).last()
-            # res_data['count'] = Analytics.object.filter(room_name = room_name).count()
-            # analytic.count = res_data['count']
-            # analytic.save()
-            # res_data['rate'] = analytics.rate
-            # res_data['level'] = analytics.level
             return  render(request,'roomout-analytics.html',res_data)
     else:
         return redirect('/login')
@@ -802,8 +670,7 @@ def roomout(request,time,mode):
             res_data['img_check'] = 0
         else:
             res_data['img_check'] = 1
-    
-        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",room, room.maker)
+
         user = User.objects.get(email = room.maker)
         res_data['maker'] = user.username
         output = ''
@@ -824,7 +691,7 @@ def roomout(request,time,mode):
                 time = 95
             elif time <110 and time >= 100:
                 time = 90
-            elif time < 100:
+            elif time < 100 and time >= 11:
                 time = time - 10
             elif time <= 10:
                 time = 0
@@ -865,7 +732,7 @@ def roomoutExam(request):
     res_data={}
     fs = FileSystemStorage()
     user_session = request.session.get('user')
-    del(request.session['room_name'])  # EXAM은 이제 끝났으니 room session 삭제
+    del(request.session['room_name'])  # EXAM은 이제 끝났으니 room session 삭제!!!!
     if user_session:
         user = User.objects.get(pk=user_session)    # 로그인 체크
         res_data['username'] = user.username        # mypage 정보
