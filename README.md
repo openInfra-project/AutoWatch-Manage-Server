@@ -12,7 +12,7 @@ py manage.py runserver
 - 실행 전 가상환경을 실행 시켜야 합니다.
 
 ## 🎨 Preview
-https://user-images.githubusercontent.com/67450413/129485476-cffd679b-18a1-4b64-a3ae-1f99b78ce653.mp4
+https://user-images.githubusercontent.com/67450413/129485577-2b1faf37-6c6e-4568-bbb1-4f6f8ad8dc71.mp4
 
 ## 💻Django
 ![django 설명](https://user-images.githubusercontent.com/67450413/129481501-0f8325d6-aad0-4a67-b9be-0d782f23c278.PNG)
