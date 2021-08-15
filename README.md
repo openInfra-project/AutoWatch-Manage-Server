@@ -1,10 +1,9 @@
-## **Synopsis**
+## 🦄 Synopsis
 - AutoWatch의 main server를 django framework를 이용해 구현 했습니다.
+- 배포된 URL -> [https://118.67.131.138:30000/](https://118.67.131.138:30000/)
 
-[https://118.67.131.138:30000/](https://118.67.131.138:30000/)
-
-### 소스 코드 실행 방법
-```bash
+#### 소스 코드 실행 방법
+```git bash
 git clone https://github.com/openInfra-project/AutoWatch-Mange-Server.git
 // 가상 환경 실행
 pip install requirements.txt
