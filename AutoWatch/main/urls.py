@@ -21,7 +21,6 @@ urlpatterns = [
     path('roomout/exam',views.roomoutExam),
     path('roomout/study',views.analytics),
     path('saveImages/',views.saveImages),
-
     path('app_makeroom', views.app_makeroom),
     path('app_makemyroom', views.app_makemyroom),
     path('app_enter_room', views.app_enterroom),

@@ -27,7 +27,6 @@ from openpyxl_image_loader import SheetImageLoader
 
 
 def main(request):
-    print("세션!!!!!!!!!!!!!!",request.session.get('room_name'))
     res_data = {}
     user_session = request.session.get('user')              # 로그인 체크
     fs = FileSystemStorage()
@@ -94,8 +93,6 @@ def makeroom(request):
                 if not(file == "NULL"):
                     fs = FileSystemStorage()
                     filename = fs.save(file.name, file)
-                    print(filename)
-
                     member = load_workbook("media/" + file.name)
                     for cell in member['Sheet1']['A']:
                         member_list.append(cell.value)
@@ -269,29 +266,23 @@ def exam2(request):
             return render(request,'enter_exam2.html',res_data)
 
         elif request.method == 'POST':
-            print("POST")
             info={}
             room_name=request.session.get('room_name')
             member_number = request.POST.get('member_number')
             member_name = request.POST.get('member_name')
-            print("Get All DATA ")
 
             #해당방의 DB속 명단Excel파일 조회
             room = Room.objects.get(room_name=room_name)
             member_file=room.file #명단
-            print(member_file)
-
 
             #DB의 member_list로 회원번호 확인 및 index 추출
             member_list=room.member_list #회원번호만 적힌 리스트
             member_list= member_list[1:-1].split(', ')
-            print(member_list)
 
             # CHECK NUMBER
             ### Correct NUMBER
             if (member_number in member_list):
                 member_index=member_list.index(member_number) +1 #index=0은'회원번호(수험번호/학번)'이므로 index로 추출된 수 +1로 쓰면됨!
-                print('member_index:'+str(member_index))
                 member = load_workbook("media/" + str(member_file))
                 sheet = member['Sheet1']
                 member_file_name = sheet['B'+str(member_index)].value 
@@ -300,7 +291,6 @@ def exam2(request):
                 ### Wrong NAME
                 if member_file_name != member_name:
                     info['result'] = "NO_NAME"
-                    print('no_name')
                 ### Correct NAME
                 else:
                     # WEB : 캡쳐이미지 받기
@@ -322,13 +312,11 @@ def exam2(request):
                     # Face Recognition
                     a=(fs.location +str("/capture/")+ member_file_image_path)
                     b=(fs.location +str("/capture/")+ member_image_path )
-                    print(a)
-                    print(b)
+
                     # luxand API
                     luxand_client = luxand("12a42a8efedf4e24b84730ce440e5429")
                     member_file_image = luxand_client.add_person(str(member_file_name), photos=[a])
                     result = luxand_client.verify(member_file_image, photo=b)
-                    print(result)
 
                     # Recognition RESULT
                     if result['status']=='success':
@@ -597,7 +585,6 @@ def analytics(request):
             if x.email == user.email:
                 x.rate = num + 1
                 x.save()
-                print(x.rate)
             else:
                 num = num+1
     
@@ -764,7 +751,6 @@ def app_makeroom(request):
     if request.method == "GET":
         return render(request, 'make_room.html')
     if request.method == "POST":
-        print("post임")
         res_data = {}
         myfile = request.FILES['files']
         print(myfile)
