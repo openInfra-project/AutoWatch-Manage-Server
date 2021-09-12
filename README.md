@@ -97,7 +97,7 @@ https://user-images.githubusercontent.com/67450413/129485577-2b1faf37-6c6e-4568-
 ## 🙋‍♂️Role
 @황한식  
 - 전체 UI/UX
-- Django 풀스텍
+- Django frontend, backend 풀스텍
 
 @김혜원 
 
