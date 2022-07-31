@@ -94,19 +94,14 @@ https://user-images.githubusercontent.com/67450413/129485577-2b1faf37-6c6e-4568-
 
 `POST`/ list/analytics/<int:pk> → Analytics List에서 선택한 QuerySet 객체의 Primary Key 값과 같은 row를 DB에서 가져와 집중도 그래프를 그려줌
 
-## 🙋‍♂️Role
-@황한식  
-- 전체 UI/UX
-- Django frontend, backend 풀스텍
-
-@김혜원 
-
-- Exam 방 입장 시 엑셀 파일 속 사진과 사용자 얼굴 인식
-- https 배포
-
-@김유림 
-
-- 안드로이드 통신코드 구현
+## 🙋‍♂️My Role
+- django UI/UX 전체 frontend 개발
+- django Rest API 설계 및 개발
+- Luxand API 얼굴인식을 통한 사용자 인증 기능 개발
+- 로그인/회원가입 개발
+- 사용자 이미지 변경이 가능한 my page 개발
+- Class 생성 및 입장 개발
+- 집중도 통계자료 그래프 기능 개발
 ## License
 ```
 MIT License
